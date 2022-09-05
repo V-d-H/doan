@@ -29,7 +29,7 @@ const {width, height} = Dimensions.get('window');
 
 export default function ProfileScreen({navigation}) {
   const {namepatient, cmnd, namecarer, address, numberphone} = useSelector(
-    state => state.profile,
+    state => state.userReducer,
   );
   const dispatch = useDispatch();
 

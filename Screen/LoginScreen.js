@@ -77,7 +77,7 @@ export default function LoginScreen({navigation}) {
       <Pressable
         style={({pressed}) => [
           {
-            backgroundColor: pressed ? 'red' : 'blue',
+            backgroundColor: pressed ? '#B0C4DE' : 'blue',
           },
           styles.pressablePress,
         ]}

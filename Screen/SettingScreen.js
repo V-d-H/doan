@@ -14,14 +14,20 @@ const changePasswordIcon = require('../Image/changePassword.png');
 const logoutIcon = require('../Image/Logout.png');
 
 export default function SettingScreen({navigation}) {
-  const {namepatient} = useSelector(state => state.profile);
+  const {namepatient} = useSelector(state => state.userReducer);
   return (
     <View style={styles.container}>
       <View style={styles.viewText}>
         <Text style={styles.textTitle}>TÀI KHOẢN CỦA BẠN</Text>
       </View>
       <Image source={avt} style={styles.avtImageStyle} />
-      <View style={{marginBottom: (height * 3) / 100}}>
+      <View
+        style={{
+          marginBottom: (height * 3) / 100,
+          width: (width * 80) / 100,
+          height: (height * 7) / 100,
+          alignItems: 'center',
+        }}>
         <Text style={styles.personalStyle}>{namepatient}</Text>
         <Text style={styles.personalStyle}>ID : 19446401</Text>
       </View>

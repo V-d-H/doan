@@ -7,6 +7,7 @@ import {
   Dimensions,
   Image,
   TextInput,
+  Alert,
 } from 'react-native';
 import RowBack from '../CustomComponent/RowBack';
 
@@ -20,6 +21,9 @@ export default function FeedbackScreen({navigation}) {
     });
     return unsubscribe;
   }, [navigation]);
+  const AlertNofication = () => {
+    Alert.alert('Gửi phản hồi thành công!');
+  };
   return (
     <View style={styles.container}>
       <RowBack
@@ -43,12 +47,33 @@ export default function FeedbackScreen({navigation}) {
       <Text
         style={{
           fontFamily: 'Roboto',
-          fontSize: 18,
-          fontWeight: 'bold',
+          fontSize: 16,
           color: 'black',
+
+          marginLeft: (width * 75) / 100,
         }}>
         {text.length}/200
       </Text>
+      <View style={{flexDirection: 'row'}}>
+        <Pressable
+          style={({pressed}) => [
+            {
+              backgroundColor: pressed ? '#B0C4DE' : 'blue',
+            },
+            styles.pressablePress,
+          ]}>
+          <Text style={[{color: 'white'}, styles.textInPressable]}>Gửi</Text>
+        </Pressable>
+        <Pressable
+          style={({pressed}) => [
+            {
+              backgroundColor: pressed ? '#B0C4DE' : 'white',
+            },
+            styles.pressablePress,
+          ]}>
+          <Text style={[{color: 'black'}, styles.textInPressable]}>Hủy</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
@@ -67,7 +92,22 @@ const styles = StyleSheet.create({
     marginTop: (height * 5) / 100,
     fontFamily: 'Roboto',
     fontSize: 18,
-    fontWeight: 'bold',
     color: 'black',
+  },
+  pressablePress: {
+    borderWidth: 1,
+    borderColor: 'black',
+    borderRadius: 12,
+    width: (width * 30) / 100,
+    height: (height * 6) / 100,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: (height * 10) / 100,
+    marginHorizontal: (width * 2) / 100,
+  },
+  textInPressable: {
+    fontFamily: 'Roboto',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
