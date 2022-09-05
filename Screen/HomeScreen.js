@@ -59,7 +59,10 @@ export default function HomeScreen({navigation}) {
           <Image source={PrescriptionIamge} style={styles.imageFuntionStyle} />
           <Text style={styles.textFunction}>Gửi phản hồi của bạn</Text>
         </Pressable>
-        <Image source={backgroundImage} />
+        <Image
+          style={{marginTop: (height * 1) / 100}}
+          source={backgroundImage}
+        />
       </View>
     </View>
   );

@@ -68,6 +68,7 @@ export default function FeedbackScreen({navigation}) {
           style={({pressed}) => [
             {
               backgroundColor: pressed ? '#B0C4DE' : 'white',
+              borderWidth: 1,
             },
             styles.pressablePress,
           ]}>
@@ -95,7 +96,6 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   pressablePress: {
-    borderWidth: 1,
     borderColor: 'black',
     borderRadius: 12,
     width: (width * 30) / 100,
