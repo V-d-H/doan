@@ -11,7 +11,7 @@ import {
 const {width, height} = Dimensions.get('window');
 const rowBackImage = require('../Image/rowBack.png');
 
-export default function RowBack(props) {
+export default function BackMainScreen(props) {
   return (
     <View style={styles.container}>
       <View
@@ -42,6 +42,7 @@ const styles = StyleSheet.create({
     width: (width * 100) / 100,
     height: (height * 12) / 100,
     alignItems: 'center',
+    backgroundColor: '#E0ECDE',
   },
   pressableRowback: {
     alignItems: 'center',
@@ -57,7 +58,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto',
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#205072',
+    color: 'black',
   },
   viewText: {
     width: (width * 80) / 100,
@@ -70,7 +71,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto',
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#7BE495',
+    color: 'black',
     marginTop: (height * 2) / 100,
   },
 });

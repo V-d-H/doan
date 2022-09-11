@@ -8,7 +8,7 @@ import {
 } from '../redux/action';
 
 const initialState = {
-  namepatient: '',
+  namepatient: 'Vu Duc Hoang',
   cmnd: '',
   namecarer: '',
   address: '',

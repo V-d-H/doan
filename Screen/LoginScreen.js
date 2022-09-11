@@ -1,18 +1,30 @@
-import React, {useState, useEffect, useRef} from 'react';
-import {View, Pressable, Text, StyleSheet, Dimensions} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {
+  View,
+  Pressable,
+  Text,
+  StyleSheet,
+  Dimensions,
+  Image,
+} from 'react-native';
 import RowBack from '../CustomComponent/RowBack';
 import {TextInput} from 'react-native-paper';
-
+import LinearGradient from 'react-native-linear-gradient';
 const {width, height} = Dimensions.get('window');
 const openEye = require('../Image/hiddenPW.png');
 const offEye = require('../Image/hiddenPWoff.png');
-
+const loginImage = require('../ImageScreen/LoginScreenImage.png');
 export default function LoginScreen({navigation}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(true);
-  const inputText1 = useRef(null);
-  const inputText2 = useRef(null);
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      setEmail('');
+      setPassword('');
+    });
+    return unsubscribe;
+  }, [navigation]);
   return (
     <View style={styles.container}>
       <RowBack
@@ -25,31 +37,24 @@ export default function LoginScreen({navigation}) {
       <TextInput
         style={styles.textInputStyle}
         mode="outlined"
-        activeUnderlineColor="black"
+        activeUnderlineColor="#A0A0A0"
         label="Nhập Email"
-        value={email}
         onSubmitEditing={email => {
           setEmail(email);
         }}
-        outlineColor="black"
-        activeOutlineColor="black"
-        ref={inputText1}
-        autoFocus={true}
-        onEndEditing={() => {
-          inputText2.current.focus();
-        }}
+        outlineColor="#A0A0A0"
+        activeOutlineColor="#A0A0A0"
       />
       <TextInput
         style={styles.textInputStyle}
         mode="outlined"
-        activeUnderlineColor="black"
+        activeUnderlineColor="#A0A0A0"
         label="Nhập mật khẩu"
-        value={password}
         onSubmitEditing={password => {
           setPassword(password);
         }}
-        outlineColor="black"
-        activeOutlineColor="black"
+        outlineColor="#A0A0A0"
+        activeOutlineColor="#A0A0A0"
         secureTextEntry={showPassword}
         right={
           <TextInput.Icon
@@ -60,10 +65,34 @@ export default function LoginScreen({navigation}) {
             style={{marginTop: (height * 2) / 100}}
           />
         }
-        ref={inputText2}
       />
       <Pressable
-        onPress={() => navigation.navigate('BeginScreen')}
+        onPress={() => navigation.navigate('Home')}
+        style={styles.loginPressStyle}>
+        {({pressed}) => (
+          <LinearGradient
+            colors={
+              pressed
+                ? ['#F0F0F0', '#F0F0F0', '#F0F0F0']
+                : ['#329D9C', '#329D9C', '#7BE495']
+            }
+            style={styles.linearGradient}>
+            <Text
+              style={[
+                {
+                  fontSize: 18,
+                  color: 'white',
+                  fontWeight: 'bold',
+                },
+                styles.textStyles,
+              ]}>
+              Đăng nhập
+            </Text>
+          </LinearGradient>
+        )}
+      </Pressable>
+      <Pressable
+        onPress={() => navigation.navigate('')}
         style={styles.PressSupport}>
         {({pressed}) => (
           <Text
@@ -74,16 +103,7 @@ export default function LoginScreen({navigation}) {
           </Text>
         )}
       </Pressable>
-      <Pressable
-        style={({pressed}) => [
-          {
-            backgroundColor: pressed ? '#B0C4DE' : 'blue',
-          },
-          styles.pressablePress,
-        ]}
-        onPress={() => navigation.navigate('Home')}>
-        <Text style={styles.textInPressable}>Đăng nhập</Text>
-      </Pressable>
+      <Image source={loginImage} />
     </View>
   );
 }
@@ -100,34 +120,30 @@ const styles = StyleSheet.create({
     marginTop: (height * 3) / 100,
     backgroundColor: 'white',
   },
-  pressablePress: {
-    borderWidth: 1,
-    borderColor: 'black',
-    borderRadius: 12,
-    width: (width * 60) / 100,
-    height: (height * 9) / 100,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: (height * 10) / 100,
-  },
   textInPressable: {
     fontFamily: 'Roboto',
     fontSize: 18,
     fontWeight: 'bold',
-    color: 'white',
-  },
-  PressSupport: {
-    marginTop: (height * 3) / 100,
-    marginLeft: (width * 64) / 100,
+    color: '#A0A0A0',
   },
   textSupportinPress: {
     fontFamily: 'Roboto',
     fontSize: 15,
-    color: 'blue',
+    color: '#7BE495',
+    marginBottom: (height * 5) / 100,
   },
-  textSupportoutPress: {
-    fontFamily: 'Roboto',
-    fontSize: 15,
-    color: 'black',
+  loginPressStyle: {
+    height: (height * 7) / 100,
+    width: (width * 60) / 100,
+    backgroundColor: 'blue',
+    borderRadius: 13,
+    marginTop: (height * 10) / 100,
+    marginBottom: (height * 2) / 100,
+  },
+  linearGradient: {
+    flex: 1,
+    borderRadius: 13,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

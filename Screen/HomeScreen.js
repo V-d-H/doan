@@ -7,63 +7,73 @@ import {
   StyleSheet,
   Dimensions,
 } from 'react-native';
-
+import {useSelector} from 'react-redux';
 const {width, height} = Dimensions.get('window');
-const homeScreenImage = require('../Image/homescreen.png');
-const backgroundImage = require('../Image/background.png');
-const doctorIcon = require('../Image/doctorIcon.png');
-const profileImage = require('../Image/profile.png');
-const PrescriptionIamge = require('../Image/PrescriptionIamge.png');
 
+const feedbackicon = require('../ImageScreen/feedback.png');
+const profileicon = require('../ImageScreen/profile.png');
+const prescriptionicon = require('../ImageScreen/prescription.png');
 export default function HomeScreen({navigation}) {
+  const {namepatient} = useSelector(state => state.userReducer);
   return (
     <View style={styles.container}>
-      <Image
-        source={homeScreenImage}
-        style={{height: (height * 37) / 100, width: (width * 100) / 100}}
-      />
-      <Text style={styles.textTitle}>Welcome to HEALTH CARE</Text>
-      <View style={styles.viewFunction}>
+      <View style={styles.headerViewStyle}>
         <Pressable
-          onPress={() => navigation.navigate('Prescription')}
-          style={({pressed}) => [
-            {
-              backgroundColor: pressed ? '#FFFAFA' : 'white',
-            },
-            styles.pressView,
-          ]}>
-          <Image source={doctorIcon} style={styles.imageFuntionStyle} />
-          <Text style={styles.textFunction}>Xem đơn thuốc của bạn</Text>
+          style={{
+            height: (height * 10) / 100,
+            width: (width * 100) / 100,
+            marginTop: (height * 3) / 100,
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}>
+          <View
+            style={{
+              height: (height * 7) / 100,
+              width: (width * 14) / 100,
+              borderRadius: 100,
+              marginHorizontal: (width * 3) / 100,
+              borderWidth: 1,
+            }}>
+            <Image />
+          </View>
+          <Text style={styles.textHeaderStyle}>{namepatient}</Text>
         </Pressable>
-        <Pressable
-          onPress={() => {
-            navigation.navigate('ProfileScreen');
-          }}
-          style={({pressed}) => [
-            {
-              backgroundColor: pressed ? '#FFFAFA' : 'white',
-            },
-            styles.pressView,
-          ]}>
-          <Image source={profileImage} style={styles.imageFuntionStyle} />
-          <Text style={styles.textFunction}>Hồ sơ cá nhân của bạn</Text>
-        </Pressable>
-        <Pressable
-          onPress={() => navigation.navigate('Feedback')}
-          style={({pressed}) => [
-            {
-              backgroundColor: pressed ? '#FFFAFA' : 'white',
-            },
-            styles.pressView,
-          ]}>
-          <Image source={PrescriptionIamge} style={styles.imageFuntionStyle} />
-          <Text style={styles.textFunction}>Gửi phản hồi của bạn</Text>
-        </Pressable>
-        <Image
-          style={{marginTop: (height * 1) / 100}}
-          source={backgroundImage}
-        />
+        <Text></Text>
       </View>
+      <Text style={styles.texttitleStyle}>Chức năng</Text>
+      <View style={styles.viewFunctionStyle}>
+        <Pressable
+          style={[{backgroundColor: '#86BAF4'}, styles.pressFunctionStyle]}>
+          <Image
+            style={{
+              marginTop: (height * 2) / 100,
+            }}
+            source={prescriptionicon}
+          />
+          <Text style={styles.textFunctionStyle}>Đơn thuốc</Text>
+        </Pressable>
+        <Pressable
+          style={[{backgroundColor: '#86F4B9'}, styles.pressFunctionStyle]}>
+          <Image
+            style={{
+              marginTop: (height * 2) / 100,
+            }}
+            source={profileicon}
+          />
+          <Text style={styles.textFunctionStyle}>Hồ sơ</Text>
+        </Pressable>
+        <Pressable
+          style={[{backgroundColor: '#FC9E9E'}, styles.pressFunctionStyle]}>
+          <Image
+            style={{
+              marginTop: (height * 2) / 100,
+            }}
+            source={feedbackicon}
+          />
+          <Text style={styles.textFunctionStyle}>Phản hồi</Text>
+        </Pressable>
+      </View>
+      <Text style={styles.texttitleStyle}>Cẩm nang</Text>
     </View>
   );
 }
@@ -74,40 +84,44 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'white',
   },
-  textTitle: {
-    fontFamily: 'Roboto',
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: 'black',
-    marginTop: (height * 20) / 100,
-    position: 'absolute',
-  },
-  viewFunction: {
-    width: (width * 95) / 100,
-    height: (height * 45) / 100,
+  pressFunctionStyle: {
+    height: (height * 25) / 100,
+    width: (width * 29) / 100,
+    marginHorizontal: (width * 2) / 100,
+    borderRadius: 20,
     alignItems: 'center',
-    position: 'absolute',
-    marginTop: (height * 30) / 100,
   },
-  pressView: {
-    height: (height * 10) / 100,
-    width: (width * 90) / 100,
+  headerViewStyle: {
+    backgroundColor: '#E0ECDE',
+    height: (height * 25) / 100,
+    width: (width * 100) / 100,
+    borderBottomLeftRadius: 15,
+    borderBottomRightRadius: 15,
+  },
+  textHeaderStyle: {
+    fontFamily: 'Roboto',
+    fontSize: 18,
+    color: 'black',
+    fontWeight: 'bold',
+  },
+  texttitleStyle: {
+    fontFamily: 'Roboto',
+    fontSize: 16,
+    color: '#205072',
+    marginRight: (width * 73) / 100,
+    marginTop: (height * 5) / 100,
+  },
+  viewFunctionStyle: {
+    height: (height * 30) / 100,
+    width: (width * 100) / 100,
+    alignItems: 'center',
+    justifyContent: 'center',
     flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: (height * 3) / 100,
-    elevation: 4,
-    borderRadius: 12,
-    borderWidth: 0,
   },
-  textFunction: {
+  textFunctionStyle: {
     fontFamily: 'Roboto',
-    fontSize: 20,
-    color: 'black',
-    fontWeight: 'bold',
-  },
-  imageFuntionStyle: {
-    height: (height * 8) / 100,
-    width: (width * 16) / 100,
-    marginHorizontal: (width * 5) / 100,
+    fontSize: 18,
+    color: 'white',
+    marginTop: (height * 7) / 100,
   },
 });
