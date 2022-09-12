@@ -21,7 +21,7 @@ export default function BackMainScreen(props) {
         <Pressable
           style={({pressed}) => [
             {
-              backgroundColor: pressed ? '#FFFAFA' : 'white',
+              backgroundColor: pressed ? '#dce8da' : '#E0ECDE',
             },
             styles.pressableRowback,
           ]}
@@ -57,8 +57,7 @@ const styles = StyleSheet.create({
   textTitle: {
     fontFamily: 'Roboto',
     fontSize: 20,
-    fontWeight: 'bold',
-    color: 'black',
+    color: '#205072',
   },
   viewText: {
     width: (width * 80) / 100,

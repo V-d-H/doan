@@ -18,7 +18,7 @@ export default function HomeScreen({navigation}) {
   return (
     <View style={styles.container}>
       <View style={styles.headerViewStyle}>
-        <Pressable
+        <View
           style={{
             height: (height * 10) / 100,
             width: (width * 100) / 100,
@@ -26,18 +26,21 @@ export default function HomeScreen({navigation}) {
             flexDirection: 'row',
             alignItems: 'center',
           }}>
-          <View
+          <Pressable
             style={{
-              height: (height * 7) / 100,
-              width: (width * 14) / 100,
+              height: (height * 8) / 100,
+              width: (width * 16) / 100,
               borderRadius: 100,
               marginHorizontal: (width * 3) / 100,
               borderWidth: 1,
+            }}
+            onPress={() => {
+              navigation.navigate('Setting');
             }}>
             <Image />
-          </View>
+          </Pressable>
           <Text style={styles.textHeaderStyle}>{namepatient}</Text>
-        </Pressable>
+        </View>
         <Text></Text>
       </View>
       <Text style={styles.texttitleStyle}>Chức năng</Text>
@@ -102,7 +105,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto',
     fontSize: 18,
     color: 'black',
-    fontWeight: 'bold',
   },
   texttitleStyle: {
     fontFamily: 'Roboto',

@@ -8,8 +8,9 @@ import {
   Pressable,
 } from 'react-native';
 import {useSelector} from 'react-redux';
+import BackMainScreen from '../CustomComponent/BackMainScreen';
 const {width, height} = Dimensions.get('window');
-const avt = require('../Image/Avt.png');
+
 const changePasswordIcon = require('../Image/changePassword.png');
 const logoutIcon = require('../Image/Logout.png');
 
@@ -17,10 +18,13 @@ export default function SettingScreen({navigation}) {
   const {namepatient} = useSelector(state => state.userReducer);
   return (
     <View style={styles.container}>
-      <View style={styles.viewText}>
-        <Text style={styles.textTitle}>TÀI KHOẢN CỦA BẠN</Text>
-      </View>
-      <Image source={avt} style={styles.avtImageStyle} />
+      <BackMainScreen
+        text="Cá nhân"
+        navigate={() => {
+          navigation.navigate('Home');
+        }}
+      />
+
       <View
         style={{
           marginBottom: (height * 3) / 100,
@@ -86,8 +90,7 @@ const styles = StyleSheet.create({
   personalStyle: {
     fontFamily: 'Roboto',
     fontSize: 18,
-    fontWeight: 'bold',
-    color: 'black',
+    color: '#205072',
   },
   viewFuction: {
     width: (width * 100) / 100,

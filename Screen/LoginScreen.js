@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Dimensions,
   Image,
+  Modal,
 } from 'react-native';
 import RowBack from '../CustomComponent/RowBack';
 import {TextInput} from 'react-native-paper';
@@ -13,15 +14,20 @@ import LinearGradient from 'react-native-linear-gradient';
 const {width, height} = Dimensions.get('window');
 const openEye = require('../Image/hiddenPW.png');
 const offEye = require('../Image/hiddenPWoff.png');
+const rowBackImage = require('../ImageScreen/rowBack.png');
 const loginImage = require('../ImageScreen/LoginScreenImage.png');
 export default function LoginScreen({navigation}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [CMND, setCMND] = useState('');
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       setEmail('');
       setPassword('');
+      setModalVisible(false);
+      setCMND('');
     });
     return unsubscribe;
   }, [navigation]);
@@ -38,11 +44,11 @@ export default function LoginScreen({navigation}) {
         style={styles.textInputStyle}
         mode="outlined"
         activeUnderlineColor="#A0A0A0"
-        label="Nhập Email"
-        onSubmitEditing={email => {
-          setEmail(email);
+        label="Nhập tài khoản"
+        onSubmitEditing={text => {
+          setEmail(text);
         }}
-        outlineColor="#A0A0A0"
+        outlineColor="#D0D0D0"
         activeOutlineColor="#A0A0A0"
       />
       <TextInput
@@ -50,10 +56,10 @@ export default function LoginScreen({navigation}) {
         mode="outlined"
         activeUnderlineColor="#A0A0A0"
         label="Nhập mật khẩu"
-        onSubmitEditing={password => {
-          setPassword(password);
+        onSubmitEditing={text => {
+          setPassword(text);
         }}
-        outlineColor="#A0A0A0"
+        outlineColor="#D0D0D0"
         activeOutlineColor="#A0A0A0"
         secureTextEntry={showPassword}
         right={
@@ -74,7 +80,7 @@ export default function LoginScreen({navigation}) {
             colors={
               pressed
                 ? ['#F0F0F0', '#F0F0F0', '#F0F0F0']
-                : ['#329D9C', '#329D9C', '#7BE495']
+                : ['#0DE655', '#0EBF48', '#098934']
             }
             style={styles.linearGradient}>
             <Text
@@ -82,7 +88,6 @@ export default function LoginScreen({navigation}) {
                 {
                   fontSize: 18,
                   color: 'white',
-                  fontWeight: 'bold',
                 },
                 styles.textStyles,
               ]}>
@@ -92,17 +97,98 @@ export default function LoginScreen({navigation}) {
         )}
       </Pressable>
       <Pressable
-        onPress={() => navigation.navigate('')}
-        style={styles.PressSupport}>
+        style={styles.SearchPressStyle}
+        onPress={() => setModalVisible(true)}>
         {({pressed}) => (
           <Text
-            style={
-              pressed ? styles.textSupportoutPress : styles.textSupportinPress
-            }>
-            Quên mật khẩu!
+            style={[
+              {
+                fontSize: 15,
+                color: pressed ? '#A0A0A0' : '#68B2A0',
+              },
+              styles.textStyles,
+            ]}>
+            Tra cứu tài khoản của bạn
           </Text>
         )}
       </Pressable>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}>
+        <View style={styles.modalViewStyles}>
+          <View style={styles.ModalStyles}>
+            <Pressable
+              style={styles.modalPressBackStyle}
+              onPress={() => {
+                setModalVisible(false);
+              }}>
+              <Image
+                source={rowBackImage}
+                style={{
+                  height: (height * 2) / 100,
+                  width: (width * 2) / 100,
+                  marginLeft: (width * 5) / 100,
+                }}
+              />
+              <Text
+                style={{
+                  fontSize: 18,
+                  color: '#205072',
+                  fontWeight: 'bold',
+                  fontFamily: 'Roboto',
+                  marginLeft: (width * 30) / 100,
+                }}>
+                Tra cứu
+              </Text>
+            </Pressable>
+
+            <Text style={styles.modalSearchTextStyle}>
+              Tài khoản: bn1.hoang
+            </Text>
+            <Text style={styles.modalSearchTextStyle}>Mật khẩu: 123456789</Text>
+            <Text style={styles.modalTextRemid}>
+              Nhập CMND/CCCD của bạn để tra cứu
+            </Text>
+            <TextInput
+              style={styles.textInputStyleModal}
+              mode="outlined"
+              activeUnderlineColor="#A0A0A0"
+              label="Nhập CMND"
+              onSubmitEditing={CMND => {
+                setCMND(CMND);
+              }}
+              outlineColor="#D0D0D0"
+              activeOutlineColor="#A0A0A0"
+            />
+            <Pressable style={styles.modalComfirmSearch}>
+              {({pressed}) => (
+                <LinearGradient
+                  colors={
+                    pressed
+                      ? ['#F0F0F0', '#F0F0F0', '#F0F0F0']
+                      : ['#0DE655', '#0EBF48', '#098934']
+                  }
+                  style={styles.linearGradient}>
+                  <Text
+                    style={[
+                      {
+                        fontSize: 18,
+                        color: 'white',
+                      },
+                      styles.textStyles,
+                    ]}>
+                    Xác nhận
+                  </Text>
+                </LinearGradient>
+              )}
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
       <Image source={loginImage} />
     </View>
   );
@@ -119,6 +205,12 @@ const styles = StyleSheet.create({
     height: (height * 8) / 100,
     marginTop: (height * 3) / 100,
     backgroundColor: 'white',
+  },
+  textSupportoutPress: {
+    fontFamily: 'Roboto',
+    fontSize: 15,
+    color: '#A0A0A0',
+    marginBottom: (height * 5) / 100,
   },
   textInPressable: {
     fontFamily: 'Roboto',
@@ -145,5 +237,62 @@ const styles = StyleSheet.create({
     borderRadius: 13,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  modalPressBackStyle: {
+    alignItems: 'center',
+    height: (height * 8) / 100,
+    width: (width * 90) / 100,
+    flexDirection: 'row',
+  },
+  ModalStyles: {
+    height: (height * 60) / 100,
+    width: (width * 90) / 100,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    alignItems: 'center',
+    borderWidth: 1,
+  },
+  StartedPressStyle: {
+    height: (height * 7) / 100,
+    width: (width * 60) / 100,
+    backgroundColor: 'blue',
+    borderRadius: 13,
+    marginTop: (height * 10) / 100,
+    marginBottom: (height * 4) / 100,
+  },
+  modalSearchTextStyle: {
+    fontFamily: 'Roboto',
+    fontSize: 18,
+    color: 'black',
+    marginVertical: (height * 1) / 100,
+    height: (height * 5) / 100,
+    width: (width * 80) / 100,
+  },
+  modalComfirmSearch: {
+    height: (height * 7) / 100,
+    width: (width * 60) / 100,
+    backgroundColor: 'blue',
+    borderRadius: 13,
+    marginTop: (height * 5) / 100,
+  },
+  modalTextRemid: {
+    fontFamily: 'Roboto',
+    fontSize: 16,
+    color: '#7BE495',
+    fontWeight: 'bold',
+  },
+  modalViewStyles: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  textStyles: {
+    fontFamily: 'Roboto',
+  },
+  textInputStyleModal: {
+    width: (width * 65) / 100,
+    height: (height * 8) / 100,
+    marginTop: (height * 3) / 100,
+    backgroundColor: 'white',
   },
 });
