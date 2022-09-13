@@ -189,7 +189,7 @@ export default function LoginScreen({navigation}) {
           </View>
         </View>
       </Modal>
-      <Image source={loginImage} />
+      <Image source={loginImage} style={{marginTop: (height * 7) / 100}} />
     </View>
   );
 }

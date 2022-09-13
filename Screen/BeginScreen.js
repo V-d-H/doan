@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     width: (width * 60) / 100,
     backgroundColor: 'blue',
     borderRadius: 13,
-    marginTop: (height * 10) / 100,
+    marginTop: (height * 15) / 100,
     marginBottom: (height * 4) / 100,
   },
   linearGradient: {

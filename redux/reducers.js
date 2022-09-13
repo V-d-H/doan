@@ -5,6 +5,9 @@ import {
   SET_ADDRESS,
   SET_NAMECARER,
   SET_NUMBERPHONE,
+  SET_AVT,
+  SET_SEX,
+  SET_BIRTHDAY,
 } from '../redux/action';
 
 const initialState = {
@@ -13,8 +16,10 @@ const initialState = {
   namecarer: '',
   address: '',
   numberphone: '',
+  uriImage: null,
+  birthday: '',
+  sex: '',
 };
-
 export default function userReducer(state = initialState, action) {
   switch (action.type) {
     case SET_NAMEPATIENT:
@@ -27,6 +32,12 @@ export default function userReducer(state = initialState, action) {
       return {...state, namecarer: action.payload};
     case SET_NUMBERPHONE:
       return {...state, numberphone: action.payload};
+    case SET_AVT:
+      return {...state, uriImage: action.payload.assets.uri};
+    case SET_BIRTHDAY:
+      return {...state, birthday: action.payload};
+    case SET_SEX:
+      return {...state, sex: action.payload};
     default:
       return state;
   }

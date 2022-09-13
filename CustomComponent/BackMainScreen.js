@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
   },
   textTitle: {
     fontFamily: 'Roboto',
-    fontSize: 20,
+    fontSize: 25,
     color: '#205072',
   },
   viewText: {

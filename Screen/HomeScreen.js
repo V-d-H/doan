@@ -56,6 +56,9 @@ export default function HomeScreen({navigation}) {
           <Text style={styles.textFunctionStyle}>Đơn thuốc</Text>
         </Pressable>
         <Pressable
+          onPress={() => {
+            navigation.navigate('ProfileScreen');
+          }}
           style={[{backgroundColor: '#86F4B9'}, styles.pressFunctionStyle]}>
           <Image
             style={{
@@ -104,7 +107,7 @@ const styles = StyleSheet.create({
   textHeaderStyle: {
     fontFamily: 'Roboto',
     fontSize: 18,
-    color: 'black',
+    color: '#205072',
   },
   texttitleStyle: {
     fontFamily: 'Roboto',
