@@ -1,4 +1,3 @@
-import {act} from 'react-test-renderer';
 import {
   SET_NAMEPATIENT,
   SET_CMND,
@@ -15,7 +14,7 @@ const initialState = {
   cmnd: '',
   namecarer: '',
   address: '',
-  numberphone: '',
+  numberphone: '0978215276',
   uriImage: null,
   birthday: '',
   sex: '',
@@ -33,7 +32,7 @@ export default function userReducer(state = initialState, action) {
     case SET_NUMBERPHONE:
       return {...state, numberphone: action.payload};
     case SET_AVT:
-      return {...state, uriImage: action.payload.assets.uri};
+      return {...state, uriImage: action.payload};
     case SET_BIRTHDAY:
       return {...state, birthday: action.payload};
     case SET_SEX:

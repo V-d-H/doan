@@ -8,6 +8,7 @@ import {
   Image,
   ScrollView,
   Modal,
+  Alert,
 } from 'react-native';
 import {TextInput} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
@@ -22,10 +23,10 @@ import {
   setSex,
   setBirthday,
 } from '../redux/action';
-
+import AwesomeAlert from 'react-native-awesome-alerts'; // Alert
 import LinearGradient from 'react-native-linear-gradient';
 import BackMainScreen from '../CustomComponent/BackMainScreen';
-import * as ImagePicker from 'react-native-image-picker';
+import {launchImageLibrary} from 'react-native-image-picker';
 const rowBackImage = require('../ImageScreen/rowBack.png');
 const {width, height} = Dimensions.get('window');
 
@@ -36,7 +37,7 @@ export default function ProfileScreen({navigation}) {
     namecarer,
     address,
     numberphone,
-    uriIamge,
+    uriImage,
     sex,
     birthday,
   } = useSelector(state => state.userReducer);
@@ -56,24 +57,40 @@ export default function ProfileScreen({navigation}) {
   const [toggleCheckBox, setToggleCheckBox] = useState(true);
   const [toggleCheckBox1, setToggleCheckBox1] = useState(false);
   const [toggleCheckBox2, setToggleCheckBox2] = useState(false);
-  const [gralaryPhoto, setGralary] = useState(null);
+
+  const [gralaryPhoto, setGralary] = useState();
   const [modalVisible, setModalVisible] = useState(false);
   const [MutilineBool, setMutilienBool] = useState(true);
+
+  const [namePatientState, setNamepatientState] = useState(namepatient);
+  const [birthdayState, setBirthdayState] = useState(birthday);
+  const [sexState, setSexState] = useState(sex);
+  const [cmndState, setCmndState] = useState(cmnd);
+  const [adressState, setAdressState] = useState(address);
+  const [nameCarerState, setNameCarerState] = useState(namecarer);
+  const [numberphoneState, setNumberPhoneState] = useState(numberphone);
+
   const ChoosePhoto = () => {
     let options = {
-      saveToPhotos: true,
-      selectionLimit: 1,
-      mediaType: 'photo',
-      includeBase64: false,
+      storageOptions: {
+        path: 'images',
+        mediaType: 'photo',
+      },
+      includeBase64: true,
     };
-    ImagePicker.launchImageLibrary(options, response => {
-      setGralary(response.assets[0].uri);
-      const source = response.assets[0].uri;
-      dispatch(setAvt(response));
-      console.log(uriIamge);
+    launchImageLibrary(options, res => {
+      if (res.didCancel) {
+        console.log('Cancelled!');
+      }
+      if (res.assets) {
+        // const source = {uri: 'data: iamge/jpeg:base64,' + res.assets[0].uri};
+        setGralary(res.assets[0].uri);
+        let stringUri = res.assets[0].uri;
+        console.log('res = ', res.assets[0].uri);
+        dispatch(setAvt(stringUri));
+      }
     });
   };
-
   return (
     <View style={styles.container}>
       <BackMainScreen
@@ -85,9 +102,7 @@ export default function ProfileScreen({navigation}) {
       <ScrollView style={styles.ViewDetailProfile}>
         <View style={{alignItems: 'center'}}>
           <Pressable
-            onPressIn={() => {
-              ChoosePhoto();
-            }}
+            onPress={ChoosePhoto}
             style={{
               height: (height * 15) / 100,
               width: (width * 33) / 100,
@@ -96,7 +111,7 @@ export default function ProfileScreen({navigation}) {
               borderRadius: 15,
             }}>
             <Image
-              source={{uri: uriIamge}}
+              source={{uri: uriImage}}
               style={{
                 height: (height * 15) / 100,
                 width: (width * 33) / 100,
@@ -109,7 +124,7 @@ export default function ProfileScreen({navigation}) {
               {marginTop: (height * 2) / 100},
               styles.detailInformationStyle,
             ]}>
-            ID:
+            ID: {namepatient}
           </Text>
           <TextInput
             style={styles.textInputStyle}
@@ -120,7 +135,7 @@ export default function ProfileScreen({navigation}) {
             activeUnderlineColor="#A0A0A0"
             label="Họ tên bệnh nhân"
             outlineColor="#D0D0D0"
-            value={namepatient}
+            value={namePatientState}
             activeOutlineColor="#A0A0A0"
             onFocus={() => {
               setMutilienBool(false);
@@ -131,7 +146,8 @@ export default function ProfileScreen({navigation}) {
               console.log(MutilineBool);
             }}
             onChangeText={text => {
-              dispatch(setNamePatient(text));
+              //dispatch(setNamePatient(text));
+              setNamepatientState(text);
             }}></TextInput>
           <TextInput
             style={styles.textInputStyle}
@@ -141,7 +157,7 @@ export default function ProfileScreen({navigation}) {
             activeUnderlineColor="#A0A0A0"
             label="Ngày tháng năm sinh"
             outlineColor="#D0D0D0"
-            value={''}
+            value={birthday}
             activeOutlineColor="#A0A0A0"
             onFocus={() => {
               setMutilienBool(false);
@@ -163,7 +179,8 @@ export default function ProfileScreen({navigation}) {
                   setToggleCheckBox(true);
                   setToggleCheckBox1(false);
                   setToggleCheckBox2(false);
-                  dispatch(setSex('Nam'));
+                  setSexState('Nam');
+                  //dispatch(setSex('Nam'));
                 }}
               />
               <Text style={styles.detailInformationStyle}>Nam</Text>
@@ -176,7 +193,8 @@ export default function ProfileScreen({navigation}) {
                   setToggleCheckBox(false);
                   setToggleCheckBox1(true);
                   setToggleCheckBox2(false);
-                  dispatch(setSex('Nữ'));
+                  //dispatch(setSex('Nữ'));
+                  setSexState('Nữ');
                 }}
               />
               <Text style={styles.detailInformationStyle}>Nữ</Text>
@@ -189,7 +207,8 @@ export default function ProfileScreen({navigation}) {
                   setToggleCheckBox(false);
                   setToggleCheckBox1(false);
                   setToggleCheckBox2(true);
-                  dispatch(setSex('Khác'));
+                  // dispatch(setSex('Khác'));
+                  setSexState('Khác');
                 }}
               />
               <Text style={styles.detailInformationStyle}>Khác</Text>
@@ -203,7 +222,7 @@ export default function ProfileScreen({navigation}) {
             activeUnderlineColor="#A0A0A0"
             label="CMND/CCCD"
             outlineColor="#D0D0D0"
-            value={''}
+            value={cmnd}
             activeOutlineColor="#A0A0A0"
             onFocus={() => {
               setMutilienBool(false);
@@ -215,7 +234,8 @@ export default function ProfileScreen({navigation}) {
             }}
             keyboardType="numeric"
             onChangeText={text => {
-              dispatch(setCMNDofPatient(text));
+              //dispatch(setCMNDofPatient(text));
+              setCmndState(text);
             }}></TextInput>
           <TextInput
             style={styles.textInputStyle}
@@ -225,7 +245,7 @@ export default function ProfileScreen({navigation}) {
             activeUnderlineColor="#A0A0A0"
             label="Địa chỉ"
             outlineColor="#D0D0D0"
-            value={''}
+            value={address}
             activeOutlineColor="#A0A0A0"
             onFocus={() => {
               setMutilienBool(false);
@@ -236,7 +256,8 @@ export default function ProfileScreen({navigation}) {
               console.log(MutilineBool);
             }}
             onChangeText={text => {
-              dispatch(setAddress(text));
+              //dispatch(setAddress(text));
+              setAdressState(text);
             }}></TextInput>
           <TextInput
             style={styles.textInputStyle}
@@ -246,7 +267,7 @@ export default function ProfileScreen({navigation}) {
             activeUnderlineColor="#A0A0A0"
             label="Họ tên người chăm sóc"
             outlineColor="#D0D0D0"
-            value={''}
+            value={namecarer}
             activeOutlineColor="#A0A0A0"
             onFocus={() => {
               setMutilienBool(false);
@@ -257,7 +278,8 @@ export default function ProfileScreen({navigation}) {
               console.log(MutilineBool);
             }}
             onChangeText={text => {
-              dispatch(setNameCarer(text));
+              // dispatch(setNameCarer(text));
+              setNameCarer(text);
             }}></TextInput>
           <TextInput
             style={styles.textInputStyle}
@@ -267,8 +289,8 @@ export default function ProfileScreen({navigation}) {
             activeUnderlineColor="#A0A0A0"
             label="Số điện thoại người chăm sóc"
             outlineColor="#D0D0D0"
-            keyboardType="numeric"
-            value={''}
+            keyboardType="number-pad"
+            value={numberphoneState}
             activeOutlineColor="#A0A0A0"
             onFocus={() => {
               setMutilienBool(false);
@@ -279,11 +301,14 @@ export default function ProfileScreen({navigation}) {
               console.log(MutilineBool);
             }}
             onChangeText={text => {
-              dispatch(setNumberphone(text));
+              //dispatch(setNumberphone(text));
+              setNumberPhoneState(text);
             }}></TextInput>
           <Pressable
             style={styles.modifyPressProfile}
-            onPress={() => navigation.navigate('LoginScreen')}>
+            onPress={() => {
+              dispatch(setNamePatient(namePatientState));
+            }}>
             {({pressed}) => (
               <LinearGradient
                 colors={
@@ -307,86 +332,6 @@ export default function ProfileScreen({navigation}) {
           </Pressable>
         </View>
       </ScrollView>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(!modalVisible);
-        }}>
-        <View style={styles.modalViewStyles}>
-          <View style={styles.ModalStyles}>
-            <Pressable
-              style={styles.modalPressBackStyle}
-              onPress={() => {
-                setModalVisible(false);
-              }}>
-              <Image
-                source={rowBackImage}
-                style={{
-                  height: (height * 2) / 100,
-                  width: (width * 2) / 100,
-                  marginLeft: (width * 5) / 100,
-                }}
-              />
-              <Text
-                style={{
-                  fontSize: 18,
-                  color: '#205072',
-                  fontWeight: 'bold',
-                  fontFamily: 'Roboto',
-                  marginLeft: (width * 25) / 100,
-                }}>
-                Chọn giới tính
-              </Text>
-            </Pressable>
-
-            <Pressable
-              style={({pressed}) => [
-                {
-                  backgroundColor: pressed ? '#F0F0F0' : 'white',
-                },
-                styles.modalPressChooseSex,
-              ]}
-              onPress={() => {
-                dispatch(setSex('Nam'));
-                setModalVisible(false);
-              }}>
-              <Text style={styles.modalSearchTextStyle}>Nam</Text>
-            </Pressable>
-            <Pressable
-              style={({pressed}) => [
-                {
-                  backgroundColor: pressed ? '#F0F0F0' : 'white',
-                  borderTopWidth: 0.5,
-                  borderBottomWidth: 0.5,
-                  borderTopColor: '#D0D0D0',
-                },
-                styles.modalPressChooseSex,
-              ]}
-              onPress={() => {
-                dispatch(setSex('Nữ'));
-                setModalVisible(false);
-              }}>
-              <Text style={styles.modalSearchTextStyle}>Nữ</Text>
-            </Pressable>
-            <Pressable
-              style={({pressed}) => [
-                {
-                  backgroundColor: pressed ? '#F0F0F0' : 'white',
-                  borderBottomWidth: 0.5,
-                },
-                styles.modalPressChooseSex,
-              ]}
-              onPress={() => {
-                dispatch(setSex('Khác'));
-                setModalVisible(false);
-              }}>
-              <Text style={styles.modalSearchTextStyle}>Khác</Text>
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 }

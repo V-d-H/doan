@@ -14,7 +14,7 @@ const feedbackicon = require('../ImageScreen/feedback.png');
 const profileicon = require('../ImageScreen/profile.png');
 const prescriptionicon = require('../ImageScreen/prescription.png');
 export default function HomeScreen({navigation}) {
-  const {namepatient} = useSelector(state => state.userReducer);
+  const {namepatient, uriImage} = useSelector(state => state.userReducer);
   return (
     <View style={styles.container}>
       <View style={styles.headerViewStyle}>
@@ -32,12 +32,18 @@ export default function HomeScreen({navigation}) {
               width: (width * 16) / 100,
               borderRadius: 100,
               marginHorizontal: (width * 3) / 100,
-              borderWidth: 1,
             }}
             onPress={() => {
               navigation.navigate('Setting');
             }}>
-            <Image />
+            <Image
+              source={{uri: uriImage}}
+              style={{
+                height: (height * 8) / 100,
+                width: (width * 16) / 100,
+                borderRadius: 100,
+              }}
+            />
           </Pressable>
           <Text style={styles.textHeaderStyle}>{namepatient}</Text>
         </View>
