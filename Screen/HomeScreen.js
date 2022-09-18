@@ -75,6 +75,9 @@ export default function HomeScreen({navigation}) {
           <Text style={styles.textFunctionStyle}>Hồ sơ</Text>
         </Pressable>
         <Pressable
+          onPress={() => {
+            navigation.navigate('Feedback');
+          }}
           style={[{backgroundColor: '#FC9E9E'}, styles.pressFunctionStyle]}>
           <Image
             style={{
@@ -112,7 +115,7 @@ const styles = StyleSheet.create({
   },
   textHeaderStyle: {
     fontFamily: 'Roboto',
-    fontSize: 18,
+    fontSize: 22,
     color: '#205072',
   },
   texttitleStyle: {

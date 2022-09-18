@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 
 const {width, height} = Dimensions.get('window');
-const rowBackImage = require('../Image/rowBack.png');
+const rowBackImage = require('../ImageScreen/rowBack.png');
 
 export default function RowBack(props) {
   return (
@@ -68,7 +68,6 @@ const styles = StyleSheet.create({
   textRemindStyle: {
     fontFamily: 'Roboto',
     fontSize: 16,
-    fontWeight: 'bold',
     color: '#7BE495',
     marginTop: (height * 2) / 100,
   },

@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 
 const {width, height} = Dimensions.get('window');
-const rowBackImage = require('../Image/rowBack.png');
+const rowBackImage = require('../ImageScreen/rowBack.png');
 
 export default function BackMainScreen(props) {
   return (
@@ -32,7 +32,6 @@ export default function BackMainScreen(props) {
           <Text style={styles.textTitle}>{props.text}</Text>
         </View>
       </View>
-      <Text style={styles.textRemindStyle}>{props.textRemind}</Text>
     </View>
   );
 }

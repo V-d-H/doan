@@ -12,8 +12,8 @@ import RowBack from '../CustomComponent/RowBack';
 import {TextInput} from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
 const {width, height} = Dimensions.get('window');
-const openEye = require('../Image/hiddenPW.png');
-const offEye = require('../Image/hiddenPWoff.png');
+const openEye = require('../ImageScreen/hiddenPW.png');
+const offEye = require('../ImageScreen/hiddenPWoff.png');
 const rowBackImage = require('../ImageScreen/rowBack.png');
 const loginImage = require('../ImageScreen/LoginScreenImage.png');
 export default function LoginScreen({navigation}) {
@@ -119,75 +119,83 @@ export default function LoginScreen({navigation}) {
         onRequestClose={() => {
           setModalVisible(!modalVisible);
         }}>
-        <View style={styles.modalViewStyles}>
-          <View style={styles.ModalStyles}>
-            <Pressable
-              style={styles.modalPressBackStyle}
-              onPress={() => {
-                setModalVisible(false);
-              }}>
-              <Image
-                source={rowBackImage}
-                style={{
-                  height: (height * 2) / 100,
-                  width: (width * 2) / 100,
-                  marginLeft: (width * 5) / 100,
-                }}
-              />
-              <Text
-                style={{
-                  fontSize: 18,
-                  color: '#205072',
-                  fontWeight: 'bold',
-                  fontFamily: 'Roboto',
-                  marginLeft: (width * 30) / 100,
+        <Pressable
+          onPress={() => {
+            setModalVisible(false);
+          }}
+          style={{flex: 1}}>
+          <View style={styles.modalViewStyles}>
+            <View style={styles.ModalStyles}>
+              <Pressable
+                style={styles.modalPressBackStyle}
+                onPress={() => {
+                  setModalVisible(false);
                 }}>
-                Tra cứu
-              </Text>
-            </Pressable>
+                <Image
+                  source={rowBackImage}
+                  style={{
+                    height: (height * 2) / 100,
+                    width: (width * 2) / 100,
+                    marginLeft: (width * 5) / 100,
+                  }}
+                />
+                <Text
+                  style={{
+                    fontSize: 18,
+                    color: '#205072',
+                    fontWeight: 'bold',
+                    fontFamily: 'Roboto',
+                    marginLeft: (width * 30) / 100,
+                  }}>
+                  Tra cứu
+                </Text>
+              </Pressable>
 
-            <Text style={styles.modalSearchTextStyle}>
-              Tài khoản: bn1.hoang
-            </Text>
-            <Text style={styles.modalSearchTextStyle}>Mật khẩu: 123456789</Text>
-            <Text style={styles.modalTextRemid}>
-              Nhập CMND/CCCD của bạn để tra cứu
-            </Text>
-            <TextInput
-              style={styles.textInputStyleModal}
-              mode="outlined"
-              activeUnderlineColor="#A0A0A0"
-              label="Nhập CMND"
-              onSubmitEditing={CMND => {
-                setCMND(CMND);
-              }}
-              outlineColor="#D0D0D0"
-              activeOutlineColor="#A0A0A0"
-            />
-            <Pressable style={styles.modalComfirmSearch}>
-              {({pressed}) => (
-                <LinearGradient
-                  colors={
-                    pressed
-                      ? ['#F0F0F0', '#F0F0F0', '#F0F0F0']
-                      : ['#0DE655', '#0EBF48', '#098934']
-                  }
-                  style={styles.linearGradient}>
-                  <Text
-                    style={[
-                      {
-                        fontSize: 18,
-                        color: 'white',
-                      },
-                      styles.textStyles,
-                    ]}>
-                    Xác nhận
-                  </Text>
-                </LinearGradient>
-              )}
-            </Pressable>
+              <Text style={styles.modalSearchTextStyle}>
+                Tài khoản: bn1.hoang
+              </Text>
+              <Text style={styles.modalSearchTextStyle}>
+                Mật khẩu: 123456789
+              </Text>
+              <Text style={styles.modalTextRemid}>
+                Nhập CMND/CCCD của bạn để tra cứu
+              </Text>
+              <TextInput
+                style={styles.textInputStyleModal}
+                mode="outlined"
+                activeUnderlineColor="#A0A0A0"
+                label="Nhập CMND"
+                onSubmitEditing={CMND => {
+                  setCMND(CMND);
+                }}
+                outlineColor="#D0D0D0"
+                activeOutlineColor="#A0A0A0"
+              />
+              <Pressable style={styles.modalComfirmSearch}>
+                {({pressed}) => (
+                  <LinearGradient
+                    colors={
+                      pressed
+                        ? ['#F0F0F0', '#F0F0F0', '#F0F0F0']
+                        : ['#0DE655', '#0EBF48', '#098934']
+                    }
+                    style={styles.linearGradient}>
+                    <Text
+                      style={[
+                        {
+                          fontSize: 18,
+                          color: 'white',
+                        },
+                        styles.textStyles,
+                      ]}>
+                      Xác nhận
+                    </Text>
+                  </LinearGradient>
+                )}
+              </Pressable>
+            </View>
           </View>
-        </View>
+        </Pressable>
       </Modal>
       <Image source={loginImage} style={{marginTop: (height * 7) / 100}} />
     </View>
@@ -279,7 +287,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto',
     fontSize: 16,
     color: '#7BE495',
-    fontWeight: 'bold',
   },
   modalViewStyles: {
     flex: 1,
