@@ -1,7 +1,16 @@
+import BackMainScreen from '../CustomComponent/BackMainScreen';
 import React, {useState} from 'react';
-import {View, Text, StyleSheet, Dimensions, FlatList} from 'react-native';
-import RowBack from '../CustomComponent/RowBack';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  FlatList,
+  Image,
+} from 'react-native';
+import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
 
+const rowPreIcon = require('../ImageScreen/rowPre.png');
 const {width, height} = Dimensions.get('window');
 
 export default function PrescriptionScreen({navigation}) {
@@ -9,50 +18,68 @@ export default function PrescriptionScreen({navigation}) {
     {
       id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
       title: 'Thuốc cảm:',
-      remind: 'Ngày 3 bữa, sau ăn',
-    },
-    {
-      id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-      title: 'Thuốc hạ sốt:',
-      remind: 'Ngày 2 bữa, sau ăn',
-    },
-    {
-      id: '58694a0f-3da1-471f-bd96-145571e29d72',
-      title: 'Thuốc an thần:',
-      remind: 'Ngày 2 bữa, trước ăn',
+      date: '17/11/2022',
+      userManual: 'Trước bữa ăn ',
     },
   ];
-  const Item = ({title, remind}) => (
-    <View style={{flexDirection: 'row'}}>
+  const Item = ({title}) => (
+    <Pressable
+      style={{
+        width: (width * 85) / 100,
+        height: (height * 8) / 100,
+        borderBottomWidth: 1,
+        borderBottomColor: '#F0F0F0',
+        flexDirection: 'row',
+        alignItems: 'center',
+      }}>
       <Text style={styles.textDetailPrescriptionStyle}>{title}</Text>
-      <Text style={styles.textDetailPrescriptionStyle}>{remind}</Text>
-    </View>
+      <View>
+        <Image
+          source={rowPreIcon}
+          style={{
+            height: (height * 2) / 100,
+            width: (width * 2) / 100,
+            marginLeft: (width * 30) / 100,
+          }}
+        />
+      </View>
+    </Pressable>
   );
   const renderItem = ({item}) => (
     <Item title={item.title} remind={item.remind} />
   );
   return (
     <View style={styles.container}>
-      <RowBack
+      <BackMainScreen
         navigate={() => {
           navigation.navigate('Home');
         }}
-        text="ĐƠN THUỐC"
-        textRemind="Thông tin đơn thuốc của bạn"
+        text="Đơn thuốc"
       />
-
-      <View style={styles.viewStatus}>
-        <Text style={styles.textRemindStyle}>Tình trạng của bệnh nhân</Text>
-        <Text style={styles.textContentStyle}></Text>
-      </View>
-      <View style={styles.viewPrescription}>
+      <View
+        style={{
+          height: (height * 90) / 100,
+          width: (width * 100) / 100,
+          alignItems: 'center',
+          borderTopLeftRadius: 15,
+          borderTopRightRadius: 15,
+          backgroundColor: 'white',
+          position: 'absolute',
+          marginTop: (height * 10) / 100,
+        }}>
+        <Text style={styles.textRemindStyle}>Tình trạng sức khỏe</Text>
+        <View style={styles.viewStatus}>
+          <Text style={styles.textContentStyle}>dsfsdfdsdsads</Text>
+        </View>
         <Text style={styles.textRemindStyle}>Đơn thuốc và cách sử dụng</Text>
-        <FlatList
-          data={DATA}
-          renderItem={renderItem}
-          keyExtractor={item => item.id}
-          showsVerticalScrollIndicator={false}
-        />
+        <View style={styles.viewPrescription}>
+          <FlatList
+            data={DATA}
+            renderItem={renderItem}
+            keyExtractor={item => item.id}
+            showsVerticalScrollIndicator={false}
+          />
+        </View>
       </View>
     </View>
   );
@@ -65,40 +92,42 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   viewStatus: {
-    width: (width * 95) / 100,
+    width: (width * 90) / 100,
     height: (height * 20) / 100,
     borderWidth: 2,
-    borderRadius: 10,
+    borderRadius: 15,
     marginVertical: (height * 2) / 100,
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    borderColor: '#F8F8F8',
+    flex: 1,
   },
   viewPrescription: {
-    width: (width * 95) / 100,
+    width: (width * 90) / 100,
     height: (height * 50) / 100,
     borderWidth: 2,
     borderRadius: 10,
     alignItems: 'center',
+    borderColor: '#F8F8F8',
   },
   textRemindStyle: {
     fontFamily: 'Roboto',
     fontSize: 18,
-    fontWeight: 'bold',
-    color: 'blue',
-    marginTop: (height * 1) / 100,
+    color: '#205072',
+    marginVertical: (height * 2) / 100,
   },
   textContentStyle: {
     fontFamily: 'Roboto',
     fontSize: 16,
-    fontWeight: 'bold',
     color: 'black',
     marginTop: (height * 1) / 100,
+    marginLeft: (width * 2) / 100,
   },
   textDetailPrescriptionStyle: {
     fontFamily: 'Roboto',
     fontSize: 18,
-    fontWeight: 'bold',
-    color: 'black',
+    color: '#205072',
     marginVertical: (height * 2) / 100,
     marginHorizontal: (width * 2) / 100,
+    width: (width * 45) / 100,
   },
 });

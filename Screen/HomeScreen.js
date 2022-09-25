@@ -14,7 +14,7 @@ const feedbackicon = require('../ImageScreen/feedback.png');
 const profileicon = require('../ImageScreen/profile.png');
 const prescriptionicon = require('../ImageScreen/prescription.png');
 export default function HomeScreen({navigation}) {
-  const {namepatient, uriImage} = useSelector(state => state.userReducer);
+  const {namepatient, uriImage, cmnd} = useSelector(state => state.userReducer);
   return (
     <View style={styles.container}>
       <View style={styles.headerViewStyle}>
@@ -28,10 +28,13 @@ export default function HomeScreen({navigation}) {
           }}>
           <Pressable
             style={{
-              height: (height * 8) / 100,
-              width: (width * 16) / 100,
+              height: (height * 8.7) / 100,
+              width: (width * 17.75) / 100,
               borderRadius: 100,
               marginHorizontal: (width * 3) / 100,
+              borderWidth: 3.5,
+              borderColor: '#acfce8',
+              justifyContent: 'center',
             }}
             onPress={() => {
               navigation.navigate('Setting');
@@ -42,16 +45,20 @@ export default function HomeScreen({navigation}) {
                 height: (height * 8) / 100,
                 width: (width * 16) / 100,
                 borderRadius: 100,
+                overflow: 'hidden',
               }}
             />
           </Pressable>
           <Text style={styles.textHeaderStyle}>{namepatient}</Text>
         </View>
-        <Text></Text>
+        <Text>{cmnd}</Text>
       </View>
       <Text style={styles.texttitleStyle}>Chức năng</Text>
       <View style={styles.viewFunctionStyle}>
         <Pressable
+          onPress={() => {
+            navigation.navigate('Prescription');
+          }}
           style={[{backgroundColor: '#86BAF4'}, styles.pressFunctionStyle]}>
           <Image
             style={{

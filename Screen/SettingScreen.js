@@ -58,15 +58,25 @@ export default function SettingScreen({navigation}) {
           position: 'absolute',
           marginTop: (height * 10) / 100,
         }}>
-        <Image
-          source={{uri: uriImage}}
+        <View
           style={{
-            height: (height * 15) / 100,
-            width: (width * 33) / 100,
-            borderRadius: 15,
+            height: (height * 15.8) / 100,
+            width: (width * 34.5) / 100,
             marginTop: (height * 3) / 100,
-          }}
-        />
+            borderColor: '#D0D0D0',
+            borderWidth: 3,
+            borderRadius: 19,
+            justifyContent: 'center',
+          }}>
+          <Image
+            source={{uri: uriImage}}
+            style={{
+              height: (height * 15) / 100,
+              width: (width * 33) / 100,
+              borderRadius: 15,
+            }}
+          />
+        </View>
 
         <View
           style={{
@@ -357,7 +367,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderBottomWidth: 0.5,
-    borderColor: '#A0A0A0',
+    borderColor: '#F0F0F0',
   },
   textFunction: {
     fontFamily: 'Roboto',

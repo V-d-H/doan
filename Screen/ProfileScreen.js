@@ -33,6 +33,7 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 const {width, height} = Dimensions.get('window');
 
 export default function ProfileScreen({navigation}) {
+  // redux
   const {
     namepatient,
     cmnd,
@@ -45,6 +46,16 @@ export default function ProfileScreen({navigation}) {
   } = useSelector(state => state.userReducer);
   const dispatch = useDispatch();
 
+  // Alert
+  // Check
+  const checkCMND = cmnd => {
+    if (cmnd.length == 10 || cmnd.length == 12) {
+      dispatch(setCMNDofPatient(cmnd));
+    } else {
+    }
+  };
+
+  // effect
   useEffect(() => {
     const unsubcribe = navigation.addListener('focus', () => {
       setModalVisible(false);
@@ -55,12 +66,14 @@ export default function ProfileScreen({navigation}) {
 
     return unsubcribe;
   }, [navigation]);
+  // Sex
   const [toggleCheckBox, setToggleCheckBox] = useState(true);
   const [toggleCheckBox1, setToggleCheckBox1] = useState(false);
   const [toggleCheckBox2, setToggleCheckBox2] = useState(false);
 
   const [modalVisible, setModalVisible] = useState(false);
 
+  // infor patient
   const [namePatientState, setNamepatientState] = useState(namepatient);
   const [birthdayState, setBirthdayState] = useState(birthday);
   const [sexState, setSexState] = useState(sex);
@@ -68,10 +81,7 @@ export default function ProfileScreen({navigation}) {
   const [adressState, setAdressState] = useState(address);
   const [nameCarerState, setNameCarerState] = useState(namecarer);
   const [numberphoneState, setNumberPhoneState] = useState(numberphone);
-  const handleUnhandledTouches = () => {
-    Keyboard.dismiss;
-    return false;
-  };
+
   const ChoosePhoto = () => {
     let options = {
       storageOptions: {
@@ -115,11 +125,13 @@ export default function ProfileScreen({navigation}) {
             <Pressable
               onPress={ChoosePhoto}
               style={{
-                height: (height * 15) / 100,
-                width: (width * 33) / 100,
-                backgroundColor: 'blue',
+                height: (height * 15.8) / 100,
+                width: (width * 34.5) / 100,
+                borderColor: '#D0D0D0',
+                borderWidth: 3,
+                borderRadius: 19,
+                justifyContent: 'center',
                 marginTop: (height * 5) / 100,
-                borderRadius: 15,
               }}>
               <Image
                 source={{uri: uriImage}}
@@ -219,12 +231,25 @@ export default function ProfileScreen({navigation}) {
               label="CMND/CCCD"
               placeholder="Nhập CMND/CCCD"
               outlineColor="#D0D0D0"
-              value={cmnd}
+              value={cmndState}
               activeOutlineColor="#A0A0A0"
               keyboardType="numeric"
               onChangeText={text => {
                 //dispatch(setCMNDofPatient(text));
                 setCmndState(text);
+                let cmndTest = text.split('');
+                console.log(cmndTest);
+                for (let i = 0; i <= cmndTest.length; i++) {
+                  if (
+                    cmndTest[i] == '.' ||
+                    cmndTest[i] == '-' ||
+                    cmndTest[i] == ','
+                  ) {
+                    Alert.alert('Khong duoc co ky tu dac biet');
+                  } else {
+                    setCMNDofPatient(text);
+                  }
+                }
               }}></TextInput>
             <TextInput
               style={styles.textInputStyle}
@@ -260,6 +285,7 @@ export default function ProfileScreen({navigation}) {
               multiline={true}
               activeUnderlineColor="#A0A0A0"
               label="Số điện thoại người chăm sóc"
+              placeholder="Nhập số điện thoại người chăm sóc"
               outlineColor="#D0D0D0"
               keyboardType="number-pad"
               value={numberphoneState}
@@ -272,7 +298,7 @@ export default function ProfileScreen({navigation}) {
             <Pressable
               style={styles.modifyPressProfile}
               onPress={() => {
-                dispatch(setNamePatient(namePatientState));
+                checkCMND(cmndState);
               }}>
               {({pressed}) => (
                 <LinearGradient
