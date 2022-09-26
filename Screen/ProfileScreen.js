@@ -6,10 +6,8 @@ import {
   StyleSheet,
   Dimensions,
   Image,
-  ScrollView,
   Modal,
   Alert,
-  Keyboard,
 } from 'react-native';
 import {TextInput} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
@@ -33,6 +31,101 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 const {width, height} = Dimensions.get('window');
 
 export default function ProfileScreen({navigation}) {
+  // Alert
+  // Check CMND
+  const [checkCMNDtext, setCheckCMNDtext] = useState('');
+  const checkCMND = cmnd => {
+    checkCMNDStr(cmnd);
+    checkSpecialStr(cmnd);
+    if (cmnd.length == 0) {
+      setCheckCMNDtext('Không được để trống mục này');
+      return false;
+    } else {
+      if (checkCMNDStr(cmnd) == false || checkSpecialStr(cmnd) == false) {
+        setCheckCMNDtext('Không chứa các ký tự hoặc các ký tự đặc biệt');
+      } else {
+        if (cmnd.length == 9 || cmnd.length == 12) {
+          setCheckCMNDtext('');
+        } else {
+          setCheckCMNDtext('Chiều dài của CMND là 9 - CCCD là 12!');
+        }
+      }
+    }
+  };
+  const checkCMNDStr = cmnd => {
+    let cmndStr = cmnd.split('');
+    for (let i = 0; i < cmnd.length; i++) {
+      if (/^[A-Za-z]+$/.test(cmndStr[i])) {
+        return false;
+      }
+    }
+  };
+  const checkSpecialStr = cmnd => {
+    var format = /^[/^\s+$/!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/;
+    let cmndStr = cmnd.split('');
+    for (let i = 0; i < cmnd.length; i++) {
+      if (format.test(cmndStr[i])) {
+        return false;
+      }
+    }
+  };
+  // Check PhoneNumber
+  const [checkPhonetext, setCheckPhonetext] = useState('');
+  const checkPhoneNumber = phone => {
+    checkPhoneStr(phone);
+    checkSpecialPhoneStr(phone);
+
+    console.log('1:', checkPhoneStr(phone));
+    console.log('2:', checkSpecialPhoneStr(phone));
+    if (phone.length == 0) {
+      setCheckPhonetext('Không được để trống mục này');
+      return false;
+    } else if (checkFisrtNumber(phone) == false) {
+      setCheckPhonetext('Số đầu tiên phải là 0!');
+      return false;
+    } else {
+      if (
+        checkPhoneStr(phone) == false ||
+        checkSpecialPhoneStr(phone) == false
+      ) {
+        setCheckPhonetext('Không chứa các ký tự hoặc các ký tự đặc biệt');
+      } else {
+        if (phone.length == 10) {
+          setCheckPhonetext('');
+        } else {
+          setCheckPhonetext('Chiều dài của số điện thoại phải là 10!');
+        }
+      }
+    }
+  };
+  const checkPhoneStr = phone => {
+    let phoneStr = phone.split('');
+    for (let i = 0; i < phone.length; i++) {
+      if (/^[A-Za-z]+$/.test(phoneStr[i])) {
+        return false;
+      }
+    }
+  };
+  const checkSpecialPhoneStr = phone => {
+    var format = /^[/^\s+$/!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/;
+    let phoneStr = phone.split('');
+    for (let i = 0; i < phone.length; i++) {
+      if (format.test(phoneStr[i])) {
+        return false;
+      }
+    }
+  };
+  const checkFisrtNumber = phone => {
+    let phoneStr = phone.split('');
+    console.log(phoneStr[0]);
+    if (checkPhoneStr(phone) == false || checkSpecialPhoneStr(phone) == false) {
+      return true;
+    } else {
+      if (phoneStr[0] != '0') {
+        return false;
+      }
+    }
+  };
   // redux
   const {
     namepatient,
@@ -45,23 +138,14 @@ export default function ProfileScreen({navigation}) {
     birthday,
   } = useSelector(state => state.userReducer);
   const dispatch = useDispatch();
-
-  // Alert
-  // Check
-  const checkCMND = cmnd => {
-    if (cmnd.length == 10 || cmnd.length == 12) {
-      dispatch(setCMNDofPatient(cmnd));
-    } else {
-    }
-  };
-
+  // làm nút quay lại và hiện thị thông báo có thay đổi không?
   // effect
   useEffect(() => {
     const unsubcribe = navigation.addListener('focus', () => {
-      setModalVisible(false);
       setToggleCheckBox(true);
       setToggleCheckBox1(false);
       setToggleCheckBox2(false);
+      setCheckCMNDtext('');
     });
 
     return unsubcribe;
@@ -70,8 +154,6 @@ export default function ProfileScreen({navigation}) {
   const [toggleCheckBox, setToggleCheckBox] = useState(true);
   const [toggleCheckBox1, setToggleCheckBox1] = useState(false);
   const [toggleCheckBox2, setToggleCheckBox2] = useState(false);
-
-  const [modalVisible, setModalVisible] = useState(false);
 
   // infor patient
   const [namePatientState, setNamepatientState] = useState(namepatient);
@@ -237,20 +319,10 @@ export default function ProfileScreen({navigation}) {
               onChangeText={text => {
                 //dispatch(setCMNDofPatient(text));
                 setCmndState(text);
-                let cmndTest = text.split('');
-                console.log(cmndTest);
-                for (let i = 0; i <= cmndTest.length; i++) {
-                  if (
-                    cmndTest[i] == '.' ||
-                    cmndTest[i] == '-' ||
-                    cmndTest[i] == ','
-                  ) {
-                    Alert.alert('Khong duoc co ky tu dac biet');
-                  } else {
-                    setCMNDofPatient(text);
-                  }
-                }
+                console.log(text);
+                checkCMND(text);
               }}></TextInput>
+            <Text style={styles.checktextStyles}>{checkCMNDtext}</Text>
             <TextInput
               style={styles.textInputStyle}
               mode="outlined"
@@ -293,11 +365,14 @@ export default function ProfileScreen({navigation}) {
               onChangeText={text => {
                 //dispatch(setNumberphone(text));
                 setNumberPhoneState(text);
+                checkPhoneNumber(text);
               }}></TextInput>
-
+            <Text style={styles.checktextStyles}>{checkPhonetext}</Text>
             <Pressable
               style={styles.modifyPressProfile}
               onPress={() => {
+                console.log('Bien state', cmndState);
+                console.log('length state', cmndState.length);
                 checkCMND(cmndState);
               }}>
               {({pressed}) => (
@@ -333,6 +408,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
     alignItems: 'center',
+  },
+  checktextStyles: {
+    fontFamily: 'Roboto',
+    fontSize: 14,
+    color: 'red',
+    width: (width * 80) / 100,
+    marginRight: (width * 10) / 100,
   },
   checkboxStyleView: {
     flexDirection: 'row',

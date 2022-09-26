@@ -11,7 +11,7 @@ import {
 
 const initialState = {
   namepatient: 'Vu Duc Hoang',
-  cmnd: '',
+  cmnd: '272802164',
   namecarer: '',
   address: '',
   numberphone: '0978215276',
