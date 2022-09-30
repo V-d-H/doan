@@ -42,7 +42,7 @@ export default function ProfileScreen({navigation}) {
       return false;
     } else {
       if (checkCMNDStr(cmnd) == false || checkSpecialStr(cmnd) == false) {
-        setCheckCMNDtext('Không chứa các ký tự hoặc các ký tự đặc biệt');
+        setCheckCMNDtext('Không chứa các ký tự và ký tự đặc biệt');
       } else {
         if (cmnd.length == 9 || cmnd.length == 12) {
           setCheckCMNDtext('');
@@ -61,10 +61,15 @@ export default function ProfileScreen({navigation}) {
     }
   };
   const checkSpecialStr = cmnd => {
-    var format = /^[/^\s+$/!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/;
+    var format = /[^\w\s\\\-]/;
     let cmndStr = cmnd.split('');
     for (let i = 0; i < cmnd.length; i++) {
-      if (format.test(cmndStr[i])) {
+      if (
+        format.test(cmndStr[i]) ||
+        cmndStr[i] == '-' ||
+        cmndStr[i] == '_' ||
+        cmndStr[i] == ' '
+      ) {
         return false;
       }
     }
@@ -74,9 +79,6 @@ export default function ProfileScreen({navigation}) {
   const checkPhoneNumber = phone => {
     checkPhoneStr(phone);
     checkSpecialPhoneStr(phone);
-
-    console.log('1:', checkPhoneStr(phone));
-    console.log('2:', checkSpecialPhoneStr(phone));
     if (phone.length == 0) {
       setCheckPhonetext('Không được để trống mục này');
       return false;
@@ -88,7 +90,7 @@ export default function ProfileScreen({navigation}) {
         checkPhoneStr(phone) == false ||
         checkSpecialPhoneStr(phone) == false
       ) {
-        setCheckPhonetext('Không chứa các ký tự hoặc các ký tự đặc biệt');
+        setCheckPhonetext('Không chứa các ký tự và ký tự đặc biệt');
       } else {
         if (phone.length == 10) {
           setCheckPhonetext('');
@@ -107,17 +109,21 @@ export default function ProfileScreen({navigation}) {
     }
   };
   const checkSpecialPhoneStr = phone => {
-    var format = /^[/^\s+$/!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/;
+    var format = /[^\w\s\\\-]/;
     let phoneStr = phone.split('');
     for (let i = 0; i < phone.length; i++) {
-      if (format.test(phoneStr[i])) {
+      if (
+        format.test(phoneStr[i]) ||
+        phoneStr[i] == '-' ||
+        phoneStr[i] == '_' ||
+        phoneStr[i] == ' '
+      ) {
         return false;
       }
     }
   };
   const checkFisrtNumber = phone => {
     let phoneStr = phone.split('');
-    console.log(phoneStr[0]);
     if (checkPhoneStr(phone) == false || checkSpecialPhoneStr(phone) == false) {
       return true;
     } else {
@@ -126,6 +132,115 @@ export default function ProfileScreen({navigation}) {
       }
     }
   };
+  // Check date
+  const [checkDateText, setCheckDateText] = useState('');
+  const checkDateSpecial = date => {
+    var format = /[^\w\s\\\-]/;
+    let dateStr = date.split('');
+    for (let i = 0; i < date.length; i++) {
+      if (
+        dateStr[0] == '/' ||
+        dateStr[1] == '/' ||
+        dateStr[3] == '/' ||
+        dateStr[4] == '/' ||
+        dateStr[6] == '/' ||
+        dateStr[7] == '/' ||
+        dateStr[8] == '/' ||
+        dateStr[9] == '/'
+      ) {
+        return 1;
+      }
+      if (dateStr[2] == '/' || dateStr[5] == '/') {
+        setCheckDateText('');
+      } else if (
+        format.test(dateStr[i]) ||
+        dateStr[i] == '-' ||
+        dateStr[i] == '_' ||
+        dateStr[i] == ' '
+      ) {
+        return false;
+      }
+    }
+  };
+  const checkDateStr = date => {
+    let dateStr = date.split('');
+    for (let i = 0; i < date.length; i++) {
+      if (/^[A-Za-z]+$/.test(dateStr[i])) {
+        return false;
+      }
+    }
+  };
+  const checkDate = date => {
+    if (date.length == 0) {
+      setCheckDateText('Không được để trống mục này');
+    } else {
+      checkDateSpecial(date);
+      checkDateStr(date);
+      if (checkDateSpecial(date) == false || checkDateStr(date) == false) {
+        setCheckDateText('Không chứa các ký tự và ký tự đặc biệt');
+        return false;
+      } else {
+        checkFormDate(date);
+      }
+    }
+  };
+  const checkFormDate = date => {
+    var parts = date.split('/');
+    var day = parseInt(parts[0], 10);
+    var month = parseInt(parts[1], 10);
+    var year = parseInt(parts[2], 10);
+
+    if (!/^(\d{2}|\d{1})\/(\d{2}|\d{1})\/\d{4}$/.test(date)) {
+      setCheckDateText('Vui lòng nhập đúng theo dạng DD/MM/YYYY');
+      return false;
+    } else {
+      setCheckDateText('');
+      checkDateMonthYear(day, month, year, parts);
+      if (checkDateMonthYear(day, month, year, parts) == false) {
+        setCheckDateText('Bạn đã nhập sai ngày tháng năm');
+        return false;
+      } else {
+        setCheckDateText('');
+        addZeroDate(day, month, year, parts); // Làm lại
+      }
+    }
+  };
+  const checkDateMonthYear = (day, month, year, parts) => {
+    if (year < 1000 || year > 3000) {
+      return false;
+    }
+    if (month == 0 || month > 12) {
+      return false;
+    }
+    var monthLength = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+    // Adjust for leap years
+    if (year % 400 == 0 || (year % 100 != 0 && year % 4 == 0)) {
+      monthLength[1] = 29;
+    }
+    return day > 0 && day <= monthLength[month - 1];
+  };
+  const addZeroDate = (day, month, year, parts) => {
+    if (day > 0 && day < 10) {
+      day = '0' + day;
+    } else {
+      day = day;
+    }
+    if (month > 0 && month < 10) {
+      month = '0' + month;
+    } else {
+      month = month;
+    }
+    year = year;
+    day = day.toString(10);
+    month = month.toString(10);
+    year = year.toString(10);
+    var a = day + '/' + month + '/' + year;
+    console.log(a);
+    setBirthdayState(a);
+    setCheckDateText('');
+  };
+
   // redux
   const {
     namepatient,
@@ -256,11 +371,15 @@ export default function ProfileScreen({navigation}) {
               label="Ngày tháng năm sinh"
               placeholder="Nhập ngày tháng năm sinh (dd/mm/yy)"
               outlineColor="#D0D0D0"
-              value={birthday}
+              value={birthdayState}
               activeOutlineColor="#A0A0A0"
               onChangeText={text => {
-                //dispatch(setBirthday(text));
+                setBirthdayState(text);
+                //  console.log(text.length);
+                checkDate(text);
+                //checkDateStr(text);
               }}></TextInput>
+            <Text style={styles.checktextStyles}>{checkDateText}</Text>
             <View style={{flexDirection: 'row'}}>
               <View style={styles.checkboxStyleView}>
                 <CheckBox
@@ -415,13 +534,14 @@ const styles = StyleSheet.create({
     color: 'red',
     width: (width * 80) / 100,
     marginRight: (width * 10) / 100,
+    marginTop: (height * 1) / 100,
   },
   checkboxStyleView: {
     flexDirection: 'row',
     height: (height * 5) / 100,
     width: (width * 20) / 100,
     alignItems: 'center',
-    marginTop: (height * 4) / 100,
+    marginTop: (height * 1) / 100,
     marginHorizontal: (width * 5) / 100,
   },
   detailInformationStyle: {
@@ -432,7 +552,7 @@ const styles = StyleSheet.create({
   textInputStyle: {
     width: (width * 90) / 100,
     height: (height * 8) / 100,
-    marginTop: (height * 3) / 100,
+    marginTop: (height * 1) / 100,
     backgroundColor: 'white',
     color: '#205072',
   },

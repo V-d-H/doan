@@ -16,7 +16,7 @@ const initialState = {
   address: '',
   numberphone: '0978215276',
   uriImage: null,
-  birthday: '',
+  birthday: '17/11/2001',
   sex: '',
 };
 export default function userReducer(state = initialState, action) {
