@@ -8,6 +8,7 @@ import {
   Image,
   Modal,
   Alert,
+  FlatList,
 } from 'react-native';
 import {TextInput} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
@@ -42,7 +43,7 @@ export default function ProfileScreen({navigation}) {
       return false;
     } else {
       if (checkCMNDStr(cmnd) == false || checkSpecialStr(cmnd) == false) {
-        setCheckCMNDtext('Không chứa các ký tự và ký tự đặc biệt');
+        setCheckCMNDtext('Không chứa các ký tự hoặc ký tự đặc biệt');
       } else {
         if (cmnd.length == 9 || cmnd.length == 12) {
           setCheckCMNDtext('');
@@ -90,7 +91,7 @@ export default function ProfileScreen({navigation}) {
         checkPhoneStr(phone) == false ||
         checkSpecialPhoneStr(phone) == false
       ) {
-        setCheckPhonetext('Không chứa các ký tự và ký tự đặc biệt');
+        setCheckPhonetext('Không chứa các ký tự hoặc ký tự đặc biệt');
       } else {
         if (phone.length == 10) {
           setCheckPhonetext('');
@@ -135,30 +136,19 @@ export default function ProfileScreen({navigation}) {
   // Check date
   const [checkDateText, setCheckDateText] = useState('');
   const checkDateSpecial = date => {
-    var format = /[^\w\s\\\-]/;
+    var format = /[^\w]/;
+    var Slash = /[^/]/;
     let dateStr = date.split('');
     for (let i = 0; i < date.length; i++) {
       if (
-        dateStr[0] == '/' ||
-        dateStr[1] == '/' ||
-        dateStr[3] == '/' ||
-        dateStr[4] == '/' ||
-        dateStr[6] == '/' ||
-        dateStr[7] == '/' ||
-        dateStr[8] == '/' ||
-        dateStr[9] == '/'
-      ) {
-        return 1;
-      }
-      if (dateStr[2] == '/' || dateStr[5] == '/') {
-        setCheckDateText('');
-      } else if (
         format.test(dateStr[i]) ||
         dateStr[i] == '-' ||
         dateStr[i] == '_' ||
         dateStr[i] == ' '
       ) {
-        return false;
+        if (Slash.test(dateStr[i])) {
+          return false;
+        }
       }
     }
   };
@@ -177,7 +167,7 @@ export default function ProfileScreen({navigation}) {
       checkDateSpecial(date);
       checkDateStr(date);
       if (checkDateSpecial(date) == false || checkDateStr(date) == false) {
-        setCheckDateText('Không chứa các ký tự và ký tự đặc biệt');
+        setCheckDateText('Không chứa các ký tự hoặc ký tự đặc biệt');
         return false;
       } else {
         checkFormDate(date);
@@ -189,23 +179,21 @@ export default function ProfileScreen({navigation}) {
     var day = parseInt(parts[0], 10);
     var month = parseInt(parts[1], 10);
     var year = parseInt(parts[2], 10);
-
-    if (!/^(\d{2}|\d{1})\/(\d{2}|\d{1})\/\d{4}$/.test(date)) {
+    if (!/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(date)) {
       setCheckDateText('Vui lòng nhập đúng theo dạng DD/MM/YYYY');
       return false;
     } else {
       setCheckDateText('');
-      checkDateMonthYear(day, month, year, parts);
-      if (checkDateMonthYear(day, month, year, parts) == false) {
+      checkDateMonthYear(day, month, year);
+      if (checkDateMonthYear(day, month, year) == false) {
         setCheckDateText('Bạn đã nhập sai ngày tháng năm');
         return false;
       } else {
         setCheckDateText('');
-        addZeroDate(day, month, year, parts); // Làm lại
       }
     }
   };
-  const checkDateMonthYear = (day, month, year, parts) => {
+  const checkDateMonthYear = (day, month, year) => {
     if (year < 1000 || year > 3000) {
       return false;
     }
@@ -219,26 +207,6 @@ export default function ProfileScreen({navigation}) {
       monthLength[1] = 29;
     }
     return day > 0 && day <= monthLength[month - 1];
-  };
-  const addZeroDate = (day, month, year, parts) => {
-    if (day > 0 && day < 10) {
-      day = '0' + day;
-    } else {
-      day = day;
-    }
-    if (month > 0 && month < 10) {
-      month = '0' + month;
-    } else {
-      month = month;
-    }
-    year = year;
-    day = day.toString(10);
-    month = month.toString(10);
-    year = year.toString(10);
-    var a = day + '/' + month + '/' + year;
-    console.log(a);
-    setBirthdayState(a);
-    setCheckDateText('');
   };
 
   // redux
@@ -362,7 +330,9 @@ export default function ProfileScreen({navigation}) {
               onChangeText={text => {
                 //dispatch(setNamePatient(text));
                 setNamepatientState(text);
-              }}></TextInput>
+              }}
+            />
+            <Text style={styles.checktextStyles}>{}</Text>
             <TextInput
               style={styles.textInputStyle}
               mode="outlined"
@@ -376,9 +346,11 @@ export default function ProfileScreen({navigation}) {
               onChangeText={text => {
                 setBirthdayState(text);
                 //  console.log(text.length);
+                console.log(text);
                 checkDate(text);
                 //checkDateStr(text);
-              }}></TextInput>
+              }}
+            />
             <Text style={styles.checktextStyles}>{checkDateText}</Text>
             <View style={{flexDirection: 'row'}}>
               <View style={styles.checkboxStyleView}>
@@ -440,7 +412,8 @@ export default function ProfileScreen({navigation}) {
                 setCmndState(text);
                 console.log(text);
                 checkCMND(text);
-              }}></TextInput>
+              }}
+            />
             <Text style={styles.checktextStyles}>{checkCMNDtext}</Text>
             <TextInput
               style={styles.textInputStyle}
@@ -455,7 +428,9 @@ export default function ProfileScreen({navigation}) {
               onChangeText={text => {
                 //dispatch(setAddress(text));
                 setAdressState(text);
-              }}></TextInput>
+              }}
+            />
+            <Text style={styles.checktextStyles}>{}</Text>
             <TextInput
               style={styles.textInputStyle}
               mode="outlined"
@@ -469,7 +444,9 @@ export default function ProfileScreen({navigation}) {
               onChangeText={text => {
                 // dispatch(setNameCarer(text));
                 setNameCarer(text);
-              }}></TextInput>
+              }}
+            />
+            <Text style={styles.checktextStyles}>{}</Text>
             <TextInput
               style={styles.textInputStyle}
               mode="outlined"
@@ -485,7 +462,8 @@ export default function ProfileScreen({navigation}) {
                 //dispatch(setNumberphone(text));
                 setNumberPhoneState(text);
                 checkPhoneNumber(text);
-              }}></TextInput>
+              }}
+            />
             <Text style={styles.checktextStyles}>{checkPhonetext}</Text>
             <Pressable
               style={styles.modifyPressProfile}
@@ -542,6 +520,7 @@ const styles = StyleSheet.create({
     width: (width * 20) / 100,
     alignItems: 'center',
     marginTop: (height * 1) / 100,
+    marginBottom: (height * 3) / 100,
     marginHorizontal: (width * 5) / 100,
   },
   detailInformationStyle: {
