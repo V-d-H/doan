@@ -8,7 +8,6 @@ import {
   Image,
   Modal,
   Alert,
-  FlatList,
 } from 'react-native';
 import {TextInput} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
@@ -23,12 +22,11 @@ import {
   setSex,
   setBirthday,
 } from '../redux/action';
-import AwesomeAlert from 'react-native-awesome-alerts'; // Alert
 import LinearGradient from 'react-native-linear-gradient';
 import BackMainScreen from '../CustomComponent/BackMainScreen';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-
+import ModalAlert from '../CustomComponent/ModalAlert';
 const {width, height} = Dimensions.get('window');
 
 export default function ProfileScreen({navigation}) {
@@ -44,11 +42,13 @@ export default function ProfileScreen({navigation}) {
     } else {
       if (checkCMNDStr(cmnd) == false || checkSpecialStr(cmnd) == false) {
         setCheckCMNDtext('Không chứa các ký tự hoặc ký tự đặc biệt');
+        return false;
       } else {
         if (cmnd.length == 9 || cmnd.length == 12) {
           setCheckCMNDtext('');
         } else {
           setCheckCMNDtext('Chiều dài của CMND là 9 - CCCD là 12!');
+          return false;
         }
       }
     }
@@ -92,11 +92,13 @@ export default function ProfileScreen({navigation}) {
         checkSpecialPhoneStr(phone) == false
       ) {
         setCheckPhonetext('Không chứa các ký tự hoặc ký tự đặc biệt');
+        return false;
       } else {
         if (phone.length == 10) {
           setCheckPhonetext('');
         } else {
           setCheckPhonetext('Chiều dài của số điện thoại phải là 10!');
+          return false;
         }
       }
     }
@@ -140,12 +142,7 @@ export default function ProfileScreen({navigation}) {
     var Slash = /[^/]/;
     let dateStr = date.split('');
     for (let i = 0; i < date.length; i++) {
-      if (
-        format.test(dateStr[i]) ||
-        dateStr[i] == '-' ||
-        dateStr[i] == '_' ||
-        dateStr[i] == ' '
-      ) {
+      if (format.test(dateStr[i]) || dateStr[i] == '-' || dateStr[i] == '_') {
         if (Slash.test(dateStr[i])) {
           return false;
         }
@@ -163,6 +160,7 @@ export default function ProfileScreen({navigation}) {
   const checkDate = date => {
     if (date.length == 0) {
       setCheckDateText('Không được để trống mục này');
+      return false;
     } else {
       checkDateSpecial(date);
       checkDateStr(date);
@@ -209,6 +207,90 @@ export default function ProfileScreen({navigation}) {
     return day > 0 && day <= monthLength[month - 1];
   };
 
+  //Check name
+  const [checkNameText, setCheckNameText] = useState('');
+  const [checkNameCarerText, setCheckNameCarerText] = useState('');
+  const checkNameCarer = name => {
+    checkNumberInText(name);
+    checkNameSpecialStr(name);
+    if (name.length == 0) {
+      setCheckNameCarerText('Không được để trống mục này');
+      return false;
+    } else {
+      if (
+        checkNumberInText(name) == false ||
+        checkNameSpecialStr(name) == false
+      ) {
+        setCheckNameCarerText('Không được chứa số hoặc ký tự đặc biệt');
+        return false;
+      } else {
+        setCheckNameCarerText('');
+      }
+    }
+  };
+  const checkName = name => {
+    checkNumberInText(name);
+    checkNameSpecialStr(name);
+    if (name.length == 0) {
+      setCheckNameText('Không được để trống mục này');
+      return false;
+    } else {
+      if (
+        checkNumberInText(name) == false ||
+        checkNameSpecialStr(name) == false
+      ) {
+        setCheckNameText('Không được chứa số hoặc ký tự đặc biệt');
+        return false;
+      } else {
+        setCheckNameText('');
+      }
+    }
+  };
+  const checkNumberInText = name => {
+    let nameStr = name.split('');
+    for (let i = 0; i < name.length; i++) {
+      if (/^[0-9]+$/.test(nameStr[i])) {
+        return false;
+      }
+    }
+  };
+  const checkNameSpecialStr = name => {
+    var format =
+      /[^\sa-zA-ZàáãạảăắằẳẵặâấầẩẫậèéẹẻẽêềếểễệđìíĩỉịòóõọỏôốồổỗộơớờởỡợùúũụủưứừửữựỳỵỷỹýÀÁÃẠẢĂẮẰẲẴẶÂẤẦẨẪẬÈÉẸẺẼÊỀẾỂỄỆĐÌÍĨỈỊÒÓÕỌỎÔỐỒỔỖỘƠỚỜỞỠỢÙÚŨỤỦƯỨỪỬỮỰỲỴỶỸÝ]/;
+    let nameStr = name.split('');
+    for (let i = 0; i < name.length; i++) {
+      if (format.test(nameStr[i])) {
+        return false;
+      }
+    }
+  };
+  // check adrress
+  const [checkAddressText, setcheckAddressText] = useState('');
+  const checkAddress = address => {
+    if (address.length == 0) {
+      setcheckAddressText('Không được để trống mục này');
+      return false;
+    } else {
+      if (checkAddressSpecialStr(address) == false) {
+        setcheckAddressText('Không chứa các ký tự đặc biệt');
+        return false;
+      } else {
+        setcheckAddressText('');
+      }
+    }
+  };
+  const checkAddressSpecialStr = address => {
+    var format =
+      /[^a-z0-9A-ZàáãạảăắằẳẵặâấầẩẫậèéẹẻẽêềếểễệđìíĩỉịòóõọỏôốồổỗộơớờởỡợùúũụủưứừửữựỳỵỷỹýÀÁÃẠẢĂẮẰẲẴẶÂẤẦẨẪẬÈÉẸẺẼÊỀẾỂỄỆĐÌÍĨỈỊÒÓÕỌỎÔỐỒỔỖỘƠỚỜỞỠỢÙÚŨỤỦƯỨỪỬỮỰỲỴỶỸÝ]/;
+    let addressStr = address.split('');
+    for (let i = 0; i < address.length; i++) {
+      if (format.test(addressStr[i])) {
+        if (/[^/,\s]/.test(addressStr[i])) {
+          return false;
+        }
+      }
+    }
+  };
   // redux
   const {
     namepatient,
@@ -221,18 +303,54 @@ export default function ProfileScreen({navigation}) {
     birthday,
   } = useSelector(state => state.userReducer);
   const dispatch = useDispatch();
-  // làm nút quay lại và hiện thị thông báo có thay đổi không?
-  // effect
-  useEffect(() => {
-    const unsubcribe = navigation.addListener('focus', () => {
+  // dispatch inforamtion
+  const saveChange = () => {
+    dispatch(setNamePatient(namePatientState));
+    dispatch(setNameCarer(nameCarerState));
+    dispatch(setCMNDofPatient(cmndState));
+    dispatch(setAddress(addressState));
+    dispatch(setNumberphone(numberphoneState));
+    dispatch(setSex(sexState));
+    dispatch(setBirthday(birthdayState));
+  };
+  //cancel Save infomation
+  const cancelSave = () => {
+    setNamepatientState(namepatient);
+    setCmndState(cmnd);
+    setBirthdayState(birthday);
+    setSexState(sex);
+    setNameCarerState(namecarer);
+    setNumberPhoneState(numberphone);
+    setCheckCMNDtext('');
+    setCheckDateText('');
+    setCheckNameCarerText('');
+    setCheckNameText('');
+    setcheckAddressText('');
+    setCheckPhonetext('');
+  };
+  // check sex
+  const checkSex = sex => {
+    if (sex == 0) {
       setToggleCheckBox(true);
       setToggleCheckBox1(false);
       setToggleCheckBox2(false);
-      setCheckCMNDtext('');
+    } else if (sex == 1) {
+      setToggleCheckBox(false);
+      setToggleCheckBox1(true);
+      setToggleCheckBox2(false);
+    } else {
+      setToggleCheckBox(false);
+      setToggleCheckBox1(false);
+      setToggleCheckBox2(true);
+    }
+  };
+  useEffect(() => {
+    const unsubcribe = navigation.addListener('focus', () => {
+      checkSex(sex);
     });
 
     return unsubcribe;
-  }, [navigation]);
+  }, [navigation, sex]);
   // Sex
   const [toggleCheckBox, setToggleCheckBox] = useState(true);
   const [toggleCheckBox1, setToggleCheckBox1] = useState(false);
@@ -243,7 +361,7 @@ export default function ProfileScreen({navigation}) {
   const [birthdayState, setBirthdayState] = useState(birthday);
   const [sexState, setSexState] = useState(sex);
   const [cmndState, setCmndState] = useState(cmnd);
-  const [adressState, setAdressState] = useState(address);
+  const [addressState, setAddressState] = useState(address);
   const [nameCarerState, setNameCarerState] = useState(namecarer);
   const [numberphoneState, setNumberPhoneState] = useState(numberphone);
 
@@ -267,13 +385,44 @@ export default function ProfileScreen({navigation}) {
       }
     });
   };
+  // Block goBack when dont save modify text
+  useEffect(() => {
+    const unsubcribe = navigation.addListener('focus', () => {
+      setModalGoback(false);
+      setModalSave(false);
+    });
+
+    return unsubcribe;
+  }, [navigation]);
+  const [modalGoback, setModalGoback] = useState(false);
+  const [modalSave, setModalSave] = useState(false);
   return (
     <View style={styles.container}>
       <BackMainScreen
         text="Hồ sơ"
         navigate={() => {
-          navigation.navigate('Home');
+          if (
+            namePatientState != namepatient ||
+            birthdayState != birthday ||
+            cmndState != cmnd ||
+            sexState != sex ||
+            addressState != address ||
+            nameCarerState != namecarer ||
+            numberphoneState != numberphone
+          ) {
+            setModalGoback(true);
+          } else {
+            navigation.navigate('Home');
+          }
         }}
+      />
+      <ModalAlert
+        open={modalGoback}
+        close={() => {
+          setModalGoback(false);
+        }}
+        textTitle="Cảnh báo"
+        textRemind="Bạn chưa lưu thông tin!"
       />
       <View
         style={{
@@ -312,7 +461,7 @@ export default function ProfileScreen({navigation}) {
                 {marginTop: (height * 2) / 100},
                 styles.detailInformationStyle,
               ]}>
-              ID: {namepatient}
+              ID:
             </Text>
 
             <TextInput
@@ -328,27 +477,25 @@ export default function ProfileScreen({navigation}) {
               activeOutlineColor="#A0A0A0"
               placeholder="Nhập họ và tên"
               onChangeText={text => {
-                //dispatch(setNamePatient(text));
                 setNamepatientState(text);
+                const nameFinal = text.normalize('NFC');
+                checkName(nameFinal);
               }}
             />
-            <Text style={styles.checktextStyles}>{}</Text>
+            <Text style={styles.checktextStyles}>{checkNameText}</Text>
             <TextInput
               style={styles.textInputStyle}
               mode="outlined"
               multiline={true}
               activeUnderlineColor="#A0A0A0"
               label="Ngày tháng năm sinh"
-              placeholder="Nhập ngày tháng năm sinh (dd/mm/yy)"
+              placeholder="Nhập ngày tháng năm sinh"
               outlineColor="#D0D0D0"
               value={birthdayState}
               activeOutlineColor="#A0A0A0"
               onChangeText={text => {
                 setBirthdayState(text);
-                //  console.log(text.length);
-                console.log(text);
                 checkDate(text);
-                //checkDateStr(text);
               }}
             />
             <Text style={styles.checktextStyles}>{checkDateText}</Text>
@@ -361,8 +508,7 @@ export default function ProfileScreen({navigation}) {
                     setToggleCheckBox(true);
                     setToggleCheckBox1(false);
                     setToggleCheckBox2(false);
-                    setSexState('Nam');
-                    //dispatch(setSex('Nam'));
+                    setSexState(0);
                   }}
                 />
                 <Text style={styles.detailInformationStyle}>Nam</Text>
@@ -375,8 +521,7 @@ export default function ProfileScreen({navigation}) {
                     setToggleCheckBox(false);
                     setToggleCheckBox1(true);
                     setToggleCheckBox2(false);
-                    //dispatch(setSex('Nữ'));
-                    setSexState('Nữ');
+                    setSexState(1);
                   }}
                 />
                 <Text style={styles.detailInformationStyle}>Nữ</Text>
@@ -389,8 +534,7 @@ export default function ProfileScreen({navigation}) {
                     setToggleCheckBox(false);
                     setToggleCheckBox1(false);
                     setToggleCheckBox2(true);
-                    // dispatch(setSex('Khác'));
-                    setSexState('Khác');
+                    setSexState(2);
                   }}
                 />
                 <Text style={styles.detailInformationStyle}>Khác</Text>
@@ -408,7 +552,6 @@ export default function ProfileScreen({navigation}) {
               activeOutlineColor="#A0A0A0"
               keyboardType="numeric"
               onChangeText={text => {
-                //dispatch(setCMNDofPatient(text));
                 setCmndState(text);
                 console.log(text);
                 checkCMND(text);
@@ -423,14 +566,15 @@ export default function ProfileScreen({navigation}) {
               label="Địa chỉ"
               placeholder="Nhập địa chỉ"
               outlineColor="#D0D0D0"
-              value={address}
+              value={addressState}
               activeOutlineColor="#A0A0A0"
               onChangeText={text => {
-                //dispatch(setAddress(text));
-                setAdressState(text);
+                setAddressState(text);
+                const adddressFinal = text.normalize('NFC');
+                checkAddress(adddressFinal);
               }}
             />
-            <Text style={styles.checktextStyles}>{}</Text>
+            <Text style={styles.checktextStyles}>{checkAddressText}</Text>
             <TextInput
               style={styles.textInputStyle}
               mode="outlined"
@@ -439,14 +583,15 @@ export default function ProfileScreen({navigation}) {
               label="Họ tên người chăm sóc"
               placeholder="Nhập họ tên người chăm sóc"
               outlineColor="#D0D0D0"
-              value={namecarer}
+              value={nameCarerState}
               activeOutlineColor="#A0A0A0"
               onChangeText={text => {
-                // dispatch(setNameCarer(text));
-                setNameCarer(text);
+                setNameCarerState(text);
+                const nameFinal = text.normalize('NFC');
+                checkNameCarer(nameFinal);
               }}
             />
-            <Text style={styles.checktextStyles}>{}</Text>
+            <Text style={styles.checktextStyles}>{checkNameCarerText}</Text>
             <TextInput
               style={styles.textInputStyle}
               mode="outlined"
@@ -459,40 +604,85 @@ export default function ProfileScreen({navigation}) {
               value={numberphoneState}
               activeOutlineColor="#A0A0A0"
               onChangeText={text => {
-                //dispatch(setNumberphone(text));
                 setNumberPhoneState(text);
                 checkPhoneNumber(text);
               }}
             />
             <Text style={styles.checktextStyles}>{checkPhonetext}</Text>
-            <Pressable
-              style={styles.modifyPressProfile}
-              onPress={() => {
-                console.log('Bien state', cmndState);
-                console.log('length state', cmndState.length);
-                checkCMND(cmndState);
-              }}>
-              {({pressed}) => (
-                <LinearGradient
-                  colors={
-                    pressed
-                      ? ['#F0F0F0', '#F0F0F0', '#F0F0F0']
-                      : ['#0DE655', '#0EBF48', '#098934']
+            <View style={{flexDirection: 'row'}}>
+              <Pressable
+                style={styles.modifyPressProfile}
+                onPress={() => {
+                  if (
+                    checkCMND(cmndState) == false ||
+                    checkPhoneNumber(numberphoneState) == false ||
+                    checkDate(birthdayState) == false ||
+                    checkFormDate(birthdayState) == false ||
+                    checkName(namePatientState) == false ||
+                    checkNameCarer(nameCarerState) == false ||
+                    checkAddress(addressState) == false
+                  ) {
+                    setModalSave(true);
+                  } else {
+                    saveChange();
                   }
-                  style={styles.linearGradient}>
-                  <Text
-                    style={[
-                      {
-                        fontSize: 18,
-                        color: 'white',
-                      },
-                      styles.textStyles,
-                    ]}>
-                    Lưu thông tin
-                  </Text>
-                </LinearGradient>
-              )}
-            </Pressable>
+                }}>
+                {({pressed}) => (
+                  <LinearGradient
+                    colors={
+                      pressed
+                        ? ['#F0F0F0', '#F0F0F0', '#F0F0F0']
+                        : ['#0DE655', '#0EBF48', '#098934']
+                    }
+                    style={styles.linearGradient}>
+                    <Text
+                      style={[
+                        {
+                          fontSize: 18,
+                          color: 'white',
+                        },
+                        styles.textStyles,
+                      ]}>
+                      Lưu thông tin
+                    </Text>
+                  </LinearGradient>
+                )}
+              </Pressable>
+              <Pressable
+                onPressOut={() => {
+                  checkSex(sexState);
+                }}
+                style={styles.modifyPressProfile}
+                onPressIn={cancelSave}>
+                {({pressed}) => (
+                  <LinearGradient
+                    colors={
+                      pressed
+                        ? ['#F0F0F0', '#F0F0F0', '#F0F0F0']
+                        : ['#0DE655', '#0EBF48', '#098934']
+                    }
+                    style={styles.linearGradient}>
+                    <Text
+                      style={[
+                        {
+                          fontSize: 18,
+                          color: 'white',
+                        },
+                        styles.textStyles,
+                      ]}>
+                      Hủy chỉnh sửa
+                    </Text>
+                  </LinearGradient>
+                )}
+              </Pressable>
+            </View>
+            <ModalAlert
+              open={modalSave}
+              close={() => setModalSave(false)}
+              textTitle="Cảnh báo"
+              textRemind="Bạn đã nhập sai gì đó"
+              textRemind1="Vui lòng kiểm tra lại"
+            />
           </View>
         </KeyboardAwareScrollView>
       </View>
@@ -537,11 +727,12 @@ const styles = StyleSheet.create({
   },
   modifyPressProfile: {
     height: (height * 7) / 100,
-    width: (width * 60) / 100,
+    width: (width * 40) / 100,
     backgroundColor: 'blue',
     borderRadius: 13,
-    marginTop: (height * 10) / 100,
+    marginTop: (height * 8) / 100,
     marginBottom: (height * 4) / 100,
+    marginHorizontal: (width * 1) / 100,
   },
   linearGradient: {
     flex: 1,

@@ -10,14 +10,14 @@ import {
 } from '../redux/action';
 
 const initialState = {
-  namepatient: 'Vu Duc Hoang',
+  namepatient: 'Vũ Đức Hoàng',
   cmnd: '272802164',
-  namecarer: '',
-  address: '',
+  namecarer: 'Vũ Đức Huân',
+  address: '25/12/30 Bùi Quang Là',
   numberphone: '0978215276',
   uriImage: null,
   birthday: '17/11/2001',
-  sex: '',
+  sex: 0,
 };
 export default function userReducer(state = initialState, action) {
   switch (action.type) {

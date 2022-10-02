@@ -284,7 +284,7 @@ export default function SettingScreen({navigation}) {
                           fontSize: 18,
                           color: 'white',
                         },
-                        styles.textStyles,
+                        styles.textStyles, // kiem tra
                       ]}>
                       Xác nhận
                     </Text>
