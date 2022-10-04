@@ -6,7 +6,6 @@ import {
   StyleSheet,
   Dimensions,
   Modal,
-  Image,
 } from 'react-native';
 const {width, height} = Dimensions.get('window');
 const warningIcon = require('../ImageScreen/warningIcon.png');
@@ -16,11 +15,15 @@ export default function ModalAlert({
   textTitle,
   textRemind,
   textRemind1,
+  saveTextButton,
+  save,
+  comfirmTextButton,
+  animationType,
 }) {
   return (
     <View>
       <Modal
-        animationType="slide"
+        animationType={animationType}
         transparent={true}
         visible={open}
         onRequestClose={close}>
@@ -29,17 +32,30 @@ export default function ModalAlert({
             <Text style={styles.textTitleStyle}>{textTitle}</Text>
             <Text style={styles.textRemindStyle}>{textRemind}</Text>
             <Text style={styles.textRemindStyle}>{textRemind1}</Text>
-            <Image
-              source={warningIcon}
+            <View
               style={{
-                height: (height * 10) / 100,
-                width: (width * 20) / 100,
-                marginVertical: (height * 1) / 100,
-              }}
-            />
-            <Pressable style={[styles.button]} onPress={close}>
-              <Text style={styles.textStyle}>Xác nhận</Text>
-            </Pressable>
+                flexDirection: 'row',
+                position: 'absolute',
+                marginTop: (height * 22) / 100,
+              }}>
+              <Pressable
+                style={[styles.button, {backgroundColor: 'blue'}]}
+                onPress={close}>
+                <Text style={[styles.textStyle, {color: 'white'}]}>
+                  {comfirmTextButton}
+                </Text>
+              </Pressable>
+              <Pressable
+                style={[
+                  styles.button,
+                  {backgroundColor: 'white', borderWidth: 1},
+                ]}
+                onPress={save}>
+                <Text style={[styles.textStyle, {color: 'black'}]}>
+                  {saveTextButton}
+                </Text>
+              </Pressable>
+            </View>
           </View>
         </View>
       </Modal>
@@ -57,19 +73,17 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 20,
     width: (width * 80) / 100,
-    height: (height * 32) / 100,
+    height: (height * 25) / 100,
     alignItems: 'center',
     elevation: 5,
   },
   button: {
     justifyContent: 'center',
     borderRadius: 20,
-    width: (width * 30) / 100,
+    width: (width * 27) / 100,
     height: (height * 6) / 100,
     elevation: 2,
-    backgroundColor: 'blue',
-    position: 'absolute',
-    marginTop: (height * 29) / 100,
+    marginHorizontal: (width * 2) / 100,
   },
   textTitleStyle: {
     fontSize: 22,
@@ -88,7 +102,6 @@ const styles = StyleSheet.create({
     marginTop: (height * 2) / 100,
   },
   textStyle: {
-    color: 'white',
     fontSize: 18,
     textAlign: 'center',
   },

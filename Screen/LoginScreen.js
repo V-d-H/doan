@@ -17,20 +17,32 @@ const offEye = require('../ImageScreen/hiddenPWoff.png');
 const rowBackImage = require('../ImageScreen/rowBack.png');
 const loginImage = require('../ImageScreen/LoginScreenImage.png');
 export default function LoginScreen({navigation}) {
-  const [email, setEmail] = useState('');
+  const [account, setAccount] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [CMND, setCMND] = useState('');
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      setEmail('');
+      setAccount('');
       setPassword('');
       setModalVisible(false);
       setCMND('');
     });
     return unsubscribe;
   }, [navigation]);
+  // check email
+  const checkEmail = email => {
+    var format = /[^a-z0-9A-Z]/;
+    let emailStr = email.split('');
+    for (let i = 0; i < email.length; i++) {
+      if (format.test(emailStr[i])) {
+        if (/[^\s]/.test(emailStr[i])) {
+          return false;
+        }
+      }
+    }
+  };
   return (
     <View style={styles.container}>
       <RowBack
@@ -45,8 +57,11 @@ export default function LoginScreen({navigation}) {
         mode="outlined"
         activeUnderlineColor="#A0A0A0"
         label="Nhập tài khoản"
-        onSubmitEditing={text => {
-          setEmail(text);
+        placeholder="Nhập tài khoản"
+        value={account}
+        dense={false}
+        onChangeText={text => {
+          setAccount(text);
         }}
         outlineColor="#D0D0D0"
         activeOutlineColor="#A0A0A0"
@@ -56,6 +71,7 @@ export default function LoginScreen({navigation}) {
         mode="outlined"
         activeUnderlineColor="#A0A0A0"
         label="Nhập mật khẩu"
+        placeholder="Nhập mật khẩu"
         onSubmitEditing={text => {
           setPassword(text);
         }}

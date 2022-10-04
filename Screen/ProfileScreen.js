@@ -6,12 +6,10 @@ import {
   StyleSheet,
   Dimensions,
   Image,
-  Modal,
-  Alert,
 } from 'react-native';
-import {TextInput} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
 import CheckBox from '@react-native-community/checkbox';
+import TextInputCustom from '../CustomComponent/TextinputCustom';
 import {
   setNamePatient,
   setAddress,
@@ -319,6 +317,7 @@ export default function ProfileScreen({navigation}) {
     setCmndState(cmnd);
     setBirthdayState(birthday);
     setSexState(sex);
+    setAddressState(address);
     setNameCarerState(namecarer);
     setNumberPhoneState(numberphone);
     setCheckCMNDtext('');
@@ -356,7 +355,7 @@ export default function ProfileScreen({navigation}) {
   const [toggleCheckBox1, setToggleCheckBox1] = useState(false);
   const [toggleCheckBox2, setToggleCheckBox2] = useState(false);
 
-  // infor patient
+  // state infor patient
   const [namePatientState, setNamepatientState] = useState(namepatient);
   const [birthdayState, setBirthdayState] = useState(birthday);
   const [sexState, setSexState] = useState(sex);
@@ -364,7 +363,7 @@ export default function ProfileScreen({navigation}) {
   const [addressState, setAddressState] = useState(address);
   const [nameCarerState, setNameCarerState] = useState(namecarer);
   const [numberphoneState, setNumberPhoneState] = useState(numberphone);
-
+  // choose photo AVT
   const ChoosePhoto = () => {
     let options = {
       storageOptions: {
@@ -390,12 +389,21 @@ export default function ProfileScreen({navigation}) {
     const unsubcribe = navigation.addListener('focus', () => {
       setModalGoback(false);
       setModalSave(false);
+      setmodalSuccess(false);
+      setmodalCancel(false);
     });
 
     return unsubcribe;
   }, [navigation]);
   const [modalGoback, setModalGoback] = useState(false);
   const [modalSave, setModalSave] = useState(false);
+  const [modalSuccess, setmodalSuccess] = useState(false);
+  const [modalCancel, setmodalCancel] = useState(false);
+  //Textinput
+  const [nameStyle, setNameStyle] = useState(false);
+  const customInput = nameStyle
+    ? styles.textInputStylecore
+    : styles.textInputStylecore1;
   return (
     <View style={styles.container}>
       <BackMainScreen
@@ -417,12 +425,66 @@ export default function ProfileScreen({navigation}) {
         }}
       />
       <ModalAlert
+        open={modalSuccess}
+        animationType="fade"
+        close={() => {
+          navigation.navigate('Home');
+        }}
+        textTitle="Thông báo"
+        textRemind1="Bạn đã lưu thông tin thành công!"
+        comfirmTextButton="Trang chủ"
+        saveTextButton="Ở lại"
+        save={() => {
+          setModalGoback(false);
+          setModalSave(false);
+          setmodalSuccess(false);
+        }}
+      />
+      <ModalAlert
+        open={modalCancel}
+        animationType="fade"
+        close={() => {
+          setmodalCancel(false);
+        }}
+        textTitle="Thông báo"
+        textRemind="Bạn đã hủy chỉnh sửa "
+        textRemind1="thông tin thành công!"
+        comfirmTextButton="Xác nhận"
+        saveTextButton="Đóng"
+        save={() => {
+          setModalGoback(false);
+          setModalSave(false);
+          setmodalSuccess(false);
+          setmodalCancel(false);
+        }}
+      />
+      <ModalAlert
         open={modalGoback}
+        animationType="slide"
         close={() => {
           setModalGoback(false);
         }}
         textTitle="Cảnh báo"
-        textRemind="Bạn chưa lưu thông tin!"
+        textRemind1="Bạn chưa lưu thông tin!"
+        comfirmTextButton="Xác nhận"
+        saveTextButton="Lưu"
+        save={() => {
+          if (
+            checkCMND(cmndState) == false ||
+            checkPhoneNumber(numberphoneState) == false ||
+            checkDate(birthdayState) == false ||
+            checkFormDate(birthdayState) == false ||
+            checkName(namePatientState) == false ||
+            checkNameCarer(nameCarerState) == false ||
+            checkAddress(addressState) == false
+          ) {
+            setModalSave(true);
+            setModalGoback(false);
+          } else {
+            saveChange();
+            setmodalSuccess(true);
+          }
+        }}
       />
       <View
         style={{
@@ -463,41 +525,29 @@ export default function ProfileScreen({navigation}) {
               ]}>
               ID:
             </Text>
-
-            <TextInput
-              style={styles.textInputStyle}
-              multiline={true}
-              mode="outlined"
-              textAlign="Right"
-              activeUnderlineColor="#A0A0A0"
-              dense={false}
-              label="Họ tên bệnh nhân"
-              outlineColor="#D0D0D0"
+            <TextInputCustom
+              customInput={nameStyle}
+              customInputText={nameStyle}
+              onFocus={() => {
+                setNameStyle(true);
+              }}
+              onBlur={() => {
+                setNameStyle(false);
+              }}
+              style={customInput}
               value={namePatientState}
-              activeOutlineColor="#A0A0A0"
-              placeholder="Nhập họ và tên"
               onChangeText={text => {
                 setNamepatientState(text);
+                console.log(text);
                 const nameFinal = text.normalize('NFC');
                 checkName(nameFinal);
               }}
+              text="Họ và tên bệnh nhân"
+              placeholder="Nhập họ và tên"
             />
+
             <Text style={styles.checktextStyles}>{checkNameText}</Text>
-            <TextInput
-              style={styles.textInputStyle}
-              mode="outlined"
-              multiline={true}
-              activeUnderlineColor="#A0A0A0"
-              label="Ngày tháng năm sinh"
-              placeholder="Nhập ngày tháng năm sinh"
-              outlineColor="#D0D0D0"
-              value={birthdayState}
-              activeOutlineColor="#A0A0A0"
-              onChangeText={text => {
-                setBirthdayState(text);
-                checkDate(text);
-              }}
-            />
+
             <Text style={styles.checktextStyles}>{checkDateText}</Text>
             <View style={{flexDirection: 'row'}}>
               <View style={styles.checkboxStyleView}>
@@ -540,74 +590,13 @@ export default function ProfileScreen({navigation}) {
                 <Text style={styles.detailInformationStyle}>Khác</Text>
               </View>
             </View>
-            <TextInput
-              style={styles.textInputStyle}
-              mode="outlined"
-              multiline={true}
-              activeUnderlineColor="#A0A0A0"
-              label="CMND/CCCD"
-              placeholder="Nhập CMND/CCCD"
-              outlineColor="#D0D0D0"
-              value={cmndState}
-              activeOutlineColor="#A0A0A0"
-              keyboardType="numeric"
-              onChangeText={text => {
-                setCmndState(text);
-                console.log(text);
-                checkCMND(text);
-              }}
-            />
+
             <Text style={styles.checktextStyles}>{checkCMNDtext}</Text>
-            <TextInput
-              style={styles.textInputStyle}
-              mode="outlined"
-              multiline={true}
-              activeUnderlineColor="#A0A0A0"
-              label="Địa chỉ"
-              placeholder="Nhập địa chỉ"
-              outlineColor="#D0D0D0"
-              value={addressState}
-              activeOutlineColor="#A0A0A0"
-              onChangeText={text => {
-                setAddressState(text);
-                const adddressFinal = text.normalize('NFC');
-                checkAddress(adddressFinal);
-              }}
-            />
+
             <Text style={styles.checktextStyles}>{checkAddressText}</Text>
-            <TextInput
-              style={styles.textInputStyle}
-              mode="outlined"
-              multiline={true}
-              activeUnderlineColor="#A0A0A0"
-              label="Họ tên người chăm sóc"
-              placeholder="Nhập họ tên người chăm sóc"
-              outlineColor="#D0D0D0"
-              value={nameCarerState}
-              activeOutlineColor="#A0A0A0"
-              onChangeText={text => {
-                setNameCarerState(text);
-                const nameFinal = text.normalize('NFC');
-                checkNameCarer(nameFinal);
-              }}
-            />
+
             <Text style={styles.checktextStyles}>{checkNameCarerText}</Text>
-            <TextInput
-              style={styles.textInputStyle}
-              mode="outlined"
-              multiline={true}
-              activeUnderlineColor="#A0A0A0"
-              label="Số điện thoại người chăm sóc"
-              placeholder="Nhập số điện thoại người chăm sóc"
-              outlineColor="#D0D0D0"
-              keyboardType="number-pad"
-              value={numberphoneState}
-              activeOutlineColor="#A0A0A0"
-              onChangeText={text => {
-                setNumberPhoneState(text);
-                checkPhoneNumber(text);
-              }}
-            />
+
             <Text style={styles.checktextStyles}>{checkPhonetext}</Text>
             <View style={{flexDirection: 'row'}}>
               <Pressable
@@ -623,8 +612,10 @@ export default function ProfileScreen({navigation}) {
                     checkAddress(addressState) == false
                   ) {
                     setModalSave(true);
+                    setModalGoback(false);
                   } else {
                     saveChange();
+                    setmodalSuccess(true);
                   }
                 }}>
                 {({pressed}) => (
@@ -651,37 +642,41 @@ export default function ProfileScreen({navigation}) {
               <Pressable
                 onPressOut={() => {
                   checkSex(sexState);
+                  setmodalCancel(true);
                 }}
-                style={styles.modifyPressProfile}
+                style={({pressed}) => [
+                  {
+                    backgroundColor: pressed ? '#F0F0F0' : 'white',
+                    alignItems: 'center',
+                    borderWidth: 1,
+                  },
+                  styles.modifyPressProfile,
+                ]}
                 onPressIn={cancelSave}>
-                {({pressed}) => (
-                  <LinearGradient
-                    colors={
-                      pressed
-                        ? ['#F0F0F0', '#F0F0F0', '#F0F0F0']
-                        : ['#0DE655', '#0EBF48', '#098934']
-                    }
-                    style={styles.linearGradient}>
-                    <Text
-                      style={[
-                        {
-                          fontSize: 18,
-                          color: 'white',
-                        },
-                        styles.textStyles,
-                      ]}>
-                      Hủy chỉnh sửa
-                    </Text>
-                  </LinearGradient>
-                )}
+                <Text
+                  style={[
+                    {
+                      fontSize: 18,
+                      color: 'black',
+                    },
+                    styles.textStyles,
+                  ]}>
+                  Hủy chỉnh sửa
+                </Text>
               </Pressable>
             </View>
             <ModalAlert
               open={modalSave}
               close={() => setModalSave(false)}
+              animationType="slide"
               textTitle="Cảnh báo"
               textRemind="Bạn đã nhập sai gì đó"
               textRemind1="Vui lòng kiểm tra lại"
+              comfirmTextButton="Xác nhận"
+              saveTextButton="Hủy"
+              save={() => {
+                setModalSave(false);
+              }}
             />
           </View>
         </KeyboardAwareScrollView>
@@ -728,11 +723,11 @@ const styles = StyleSheet.create({
   modifyPressProfile: {
     height: (height * 7) / 100,
     width: (width * 40) / 100,
-    backgroundColor: 'blue',
     borderRadius: 13,
     marginTop: (height * 8) / 100,
     marginBottom: (height * 4) / 100,
     marginHorizontal: (width * 1) / 100,
+    justifyContent: 'center',
   },
   linearGradient: {
     flex: 1,
