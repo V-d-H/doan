@@ -7,6 +7,7 @@ import {
   SET_AVT,
   SET_SEX,
   SET_BIRTHDAY,
+  SET_STATUS,
 } from '../redux/action';
 
 const initialState = {
@@ -18,6 +19,7 @@ const initialState = {
   uriImage: null,
   birthday: '17/11/2001',
   sex: 0,
+  status: 0,
 };
 export default function userReducer(state = initialState, action) {
   switch (action.type) {
@@ -37,6 +39,8 @@ export default function userReducer(state = initialState, action) {
       return {...state, birthday: action.payload};
     case SET_SEX:
       return {...state, sex: action.payload};
+    case SET_STATUS:
+      return {...state, status: action.payload};
     default:
       return state;
   }

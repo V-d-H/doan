@@ -24,8 +24,8 @@ export default () => {
           screenOptions={{headerShown: false}}
           //initialRouteName="BeginScreen"
         >
-          <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
           <Stack.Screen name="LoginScreen" component={LoginScreen} />
+          <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="Prescription" component={PrescriptionScreen} />
           <Stack.Screen name="Setting" component={SettingScreen} />

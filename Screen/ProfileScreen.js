@@ -400,10 +400,24 @@ export default function ProfileScreen({navigation}) {
   const [modalSuccess, setmodalSuccess] = useState(false);
   const [modalCancel, setmodalCancel] = useState(false);
   //Textinput
+  useEffect(() => {
+    const unsubcribe = navigation.addListener('focus', () => {
+      setNameStyle(false);
+      setdateStyle(false);
+      setcmndStyle(false);
+      setaddressStyle(false);
+      setnamecarerStyle(false);
+      setnumberStyle(false);
+    });
+
+    return unsubcribe;
+  }, [navigation]);
   const [nameStyle, setNameStyle] = useState(false);
-  const customInput = nameStyle
-    ? styles.textInputStylecore
-    : styles.textInputStylecore1;
+  const [dateStyle, setdateStyle] = useState(false);
+  const [cmndStyle, setcmndStyle] = useState(false);
+  const [addressStyle, setaddressStyle] = useState(false);
+  const [namecarerStyle, setnamecarerStyle] = useState(false);
+  const [numberStyle, setnumberStyle] = useState(false);
   return (
     <View style={styles.container}>
       <BackMainScreen
@@ -428,12 +442,14 @@ export default function ProfileScreen({navigation}) {
         open={modalSuccess}
         animationType="fade"
         close={() => {
-          navigation.navigate('Home');
+          setmodalSuccess(false);
+          setModalGoback(false);
+          setModalSave(false);
         }}
         textTitle="Thông báo"
         textRemind1="Bạn đã lưu thông tin thành công!"
-        comfirmTextButton="Trang chủ"
-        saveTextButton="Ở lại"
+        comfirmTextButton="Xác nhận"
+        saveTextButton="Đóng"
         save={() => {
           setModalGoback(false);
           setModalSave(false);
@@ -534,11 +550,9 @@ export default function ProfileScreen({navigation}) {
               onBlur={() => {
                 setNameStyle(false);
               }}
-              style={customInput}
               value={namePatientState}
               onChangeText={text => {
                 setNamepatientState(text);
-                console.log(text);
                 const nameFinal = text.normalize('NFC');
                 checkName(nameFinal);
               }}
@@ -547,7 +561,24 @@ export default function ProfileScreen({navigation}) {
             />
 
             <Text style={styles.checktextStyles}>{checkNameText}</Text>
-
+            <TextInputCustom
+              customInput={dateStyle}
+              customInputText={dateStyle}
+              onFocus={() => {
+                setdateStyle(true);
+              }}
+              onBlur={() => {
+                setdateStyle(false);
+              }}
+              value={birthdayState}
+              onChangeText={text => {
+                setBirthdayState(text);
+                checkDate(text);
+              }}
+              keyboardType="numeric"
+              text="Ngày tháng năm sinh"
+              placeholder="Nhập ngày tháng năm sinh"
+            />
             <Text style={styles.checktextStyles}>{checkDateText}</Text>
             <View style={{flexDirection: 'row'}}>
               <View style={styles.checkboxStyleView}>
@@ -590,13 +621,81 @@ export default function ProfileScreen({navigation}) {
                 <Text style={styles.detailInformationStyle}>Khác</Text>
               </View>
             </View>
-
+            <TextInputCustom
+              customInput={cmndStyle}
+              customInputText={cmndStyle}
+              onFocus={() => {
+                setcmndStyle(true);
+              }}
+              onBlur={() => {
+                setcmndStyle(false);
+              }}
+              value={cmndState}
+              onChangeText={text => {
+                setCmndState(text);
+                checkCMND(text);
+              }}
+              keyboardType="numeric"
+              text="CMND/CCCD"
+              placeholder="Nhập CMND/CCCD"
+            />
             <Text style={styles.checktextStyles}>{checkCMNDtext}</Text>
-
+            <TextInputCustom
+              customInput={addressStyle}
+              customInputText={addressStyle}
+              onFocus={() => {
+                setaddressStyle(true);
+              }}
+              onBlur={() => {
+                setaddressStyle(false);
+              }}
+              value={addressState}
+              onChangeText={text => {
+                setAddressState(text);
+                const adddressFinal = text.normalize('NFC');
+                checkAddress(adddressFinal);
+              }}
+              text="Địa chỉ"
+              placeholder="Nhập Địa chỉ"
+            />
             <Text style={styles.checktextStyles}>{checkAddressText}</Text>
-
+            <TextInputCustom
+              customInput={namecarerStyle}
+              customInputText={namecarerStyle}
+              onFocus={() => {
+                setnamecarerStyle(true);
+              }}
+              onBlur={() => {
+                setnamecarerStyle(false);
+              }}
+              value={nameCarerState}
+              onChangeText={text => {
+                setNameCarerState(text);
+                const nameFinal = text.normalize('NFC');
+                checkNameCarer(nameFinal);
+              }}
+              text="Họ tên người chăm sóc"
+              placeholder="Nhập họ tên người chăm sóc"
+            />
             <Text style={styles.checktextStyles}>{checkNameCarerText}</Text>
-
+            <TextInputCustom
+              customInput={numberStyle}
+              customInputText={numberStyle}
+              onFocus={() => {
+                setnumberStyle(true);
+              }}
+              onBlur={() => {
+                setnumberStyle(false);
+              }}
+              value={numberphoneState}
+              onChangeText={text => {
+                setNumberPhoneState(text);
+                checkPhoneNumber(text);
+              }}
+              keyboardType="numeric"
+              text="Số điện thoại liên lạc"
+              placeholder="Nhập số điện thoại"
+            />
             <Text style={styles.checktextStyles}>{checkPhonetext}</Text>
             <View style={{flexDirection: 'row'}}>
               <Pressable

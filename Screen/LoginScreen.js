@@ -11,6 +11,11 @@ import {
 import RowBack from '../CustomComponent/RowBack';
 import {TextInput} from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
+import ModalAlert from '../CustomComponent/ModalAlert';
+import {useDispatch, useSelector} from 'react-redux';
+import {setStatusAPI} from '../redux/action';
+import axios from 'axios';
+
 const {width, height} = Dimensions.get('window');
 const openEye = require('../ImageScreen/hiddenPW.png');
 const offEye = require('../ImageScreen/hiddenPWoff.png');
@@ -22,35 +27,212 @@ export default function LoginScreen({navigation}) {
   const [showPassword, setShowPassword] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [CMND, setCMND] = useState('');
+
+  // check email
+  const checkAccount = acc => {
+    var format = /[^a-z0-9A-Z]/;
+    let accStr = acc.split('');
+    for (let i = 0; i < acc.length; i++) {
+      if (format.test(accStr[i])) {
+        if (/[^\s]/.test(accStr[i])) {
+          return false;
+        }
+      }
+      if (/[\s]/.test(accStr[i])) {
+        return 1;
+      }
+    }
+  };
+  const onChangeText = text => {
+    checkAccount(text);
+    if (checkAccount(text) == false) {
+      setAccountText('Không được chứa các ký hiệu đặc biệt');
+      return false;
+    } else if (checkAccount(text) == 1) {
+      setAccountText('Không chứa khoảng trắng');
+      return false;
+    } else {
+      setAccountText('');
+    }
+  };
+  // Check PWD
+  const checkPWD = text => {
+    var format = /[^a-zA-Z0-9\s]/;
+    let textStr = text.split('');
+    for (let i = 0; i < text.length; i++) {
+      if (format.test(textStr[i])) {
+        return false;
+      }
+      if (/[\s]/.test(textStr[i])) {
+        return 1;
+      }
+    }
+  };
+  const onChangeTextPWD = text => {
+    checkPWD(text);
+    if (checkPWD(text) == false) {
+      setPWDText('Không được chứa các ký hiệu đặc biệt');
+      return false;
+    } else if (checkPWD(text) == 1) {
+      setPWDText('Không chứa khoảng trắng');
+      return false;
+    } else {
+      setPWDText('');
+    }
+  };
+  //check CMND
+  const checkCMND = cmnd => {
+    checkCMNDStr(cmnd);
+    checkSpecialStr(cmnd);
+    if (cmnd.length == 0) {
+      setCMNDText('');
+    } else {
+      if (checkCMNDStr(cmnd) == false || checkSpecialStr(cmnd) == false) {
+        setCMNDText('Không chứa các ký tự hoặc ký tự đặc biệt');
+        return false;
+      } else {
+        if (cmnd.length == 9 || cmnd.length == 12) {
+          setCMNDText('');
+        } else {
+          setCMNDText('Chiều dài của CMND là 9 - CCCD là 12!');
+          return false;
+        }
+      }
+    }
+  };
+  const checkCMNDStr = cmnd => {
+    let cmndStr = cmnd.split('');
+    for (let i = 0; i < cmnd.length; i++) {
+      if (/^[A-Za-z]+$/.test(cmndStr[i])) {
+        return false;
+      }
+    }
+  };
+  const checkSpecialStr = cmnd => {
+    var format = /[^\w\s\\\-]/;
+    let cmndStr = cmnd.split('');
+    for (let i = 0; i < cmnd.length; i++) {
+      if (
+        format.test(cmndStr[i]) ||
+        cmndStr[i] == '-' ||
+        cmndStr[i] == '_' ||
+        cmndStr[i] == ' '
+      ) {
+        return false;
+      }
+    }
+  };
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      setAccountText('');
+      setPWDText('');
+      setCMNDText('');
+    });
+    return unsubscribe;
+  }, [navigation]);
+  // State of input
+  const [accoutnText, setAccountText] = useState('');
+  const [PWDtext, setPWDText] = useState('');
+  const [cmmdText, setCMNDText] = useState('');
+  //redux
+  const {status} = useSelector(state => state.userReducer);
+  const dispatch = useDispatch();
+  // Axios search
+  const [searchAcc, setsearchAcc] = useState('');
+  const [searchPWD, setsearchPWD] = useState('');
+  const getApiList = async cmnd => {
+    const url = 'http://159.223.48.4:8002/duchoang/search-account/' + cmnd;
+    axios
+      .get(url)
+      .then(function (response) {
+        // xử trí khi thành công
+        setsearchPWD(response.data.details.pwd);
+        setsearchAcc(response.data.details.idpatient);
+        dispatch(setStatusAPI(response.data.status));
+        if (response.data.status == true) {
+          dispatch(setStatusAPI(1));
+          setmodalsuccesSearch(true);
+        } else {
+          dispatch(setStatusAPI(0));
+          setmodalFailSearch(true);
+        }
+      })
+      .catch(function (error) {
+        // xử trí khi bị lỗi
+        setmodalFailSearch(true);
+        console.log(error);
+      })
+      .then(function () {});
+  };
+  //Alert
+  const [modalFail, setmodalFail] = useState(false);
+  const [modalFailSearch, setmodalFailSearch] = useState(false);
+  const [modalsuccesSearch, setmodalsuccesSearch] = useState(false);
+
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       setAccount('');
       setPassword('');
       setModalVisible(false);
       setCMND('');
+      setmodalFail(false);
+      setmodalFailSearch(false);
+      setmodalsuccesSearch(false);
     });
     return unsubscribe;
   }, [navigation]);
-  // check email
-  const checkEmail = email => {
-    var format = /[^a-z0-9A-Z]/;
-    let emailStr = email.split('');
-    for (let i = 0; i < email.length; i++) {
-      if (format.test(emailStr[i])) {
-        if (/[^\s]/.test(emailStr[i])) {
-          return false;
-        }
-      }
-    }
-  };
   return (
     <View style={styles.container}>
       <RowBack
         navigate={() => {
           navigation.navigate('BeginScreen');
         }}
-        text="ĐĂNG NHẬP"
+        text="Đăng nhập"
         textRemind="Vui lòng điền thông tin đăng nhập"
+      />
+      <ModalAlert
+        open={modalsuccesSearch}
+        animationType="fade"
+        close={() => {
+          setmodalsuccesSearch(false);
+        }}
+        textTitle="Thông báo"
+        textRemind1="Tra cứu thành công"
+        comfirmTextButton="Xác nhận"
+        saveTextButton="Đóng"
+        save={() => {
+          setmodalsuccesSearch(false);
+        }}
+      />
+      <ModalAlert
+        open={modalFail}
+        animationType="fade"
+        close={() => {
+          setmodalFail(false);
+        }}
+        textTitle="Thông báo"
+        textRemind="Sai thông tin tài khoản"
+        textRemind1="hoặc mật khẩu!"
+        comfirmTextButton="Xác nhận"
+        saveTextButton="Đóng"
+        save={() => {
+          setmodalFail(false);
+        }}
+      />
+      <ModalAlert
+        open={modalFailSearch}
+        animationType="fade"
+        close={() => {
+          setmodalFailSearch(false);
+        }}
+        textTitle="Thông báo"
+        textRemind="Tra cứu thất bại"
+        textRemind1="Vui lòng kiểm tra lại"
+        comfirmTextButton="Xác nhận"
+        saveTextButton="Đóng"
+        save={() => {
+          setmodalFailSearch(false);
+        }}
       />
       <TextInput
         style={styles.textInputStyle}
@@ -62,19 +244,23 @@ export default function LoginScreen({navigation}) {
         dense={false}
         onChangeText={text => {
           setAccount(text);
+          onChangeText(text);
         }}
         outlineColor="#D0D0D0"
         activeOutlineColor="#A0A0A0"
       />
+      <Text style={styles.textWarning}>{accoutnText}</Text>
       <TextInput
         style={styles.textInputStyle}
         mode="outlined"
         activeUnderlineColor="#A0A0A0"
         label="Nhập mật khẩu"
         placeholder="Nhập mật khẩu"
-        onSubmitEditing={text => {
+        onChangeText={text => {
           setPassword(text);
+          onChangeTextPWD(text);
         }}
+        value={password}
         outlineColor="#D0D0D0"
         activeOutlineColor="#A0A0A0"
         secureTextEntry={showPassword}
@@ -88,8 +274,13 @@ export default function LoginScreen({navigation}) {
           />
         }
       />
+      <Text style={styles.textWarning}>{PWDtext}</Text>
       <Pressable
-        onPress={() => navigation.navigate('Home')}
+        onPress={() => {
+          if (checkAccount(account) == false || checkPWD(password) == false) {
+            setmodalFail(true);
+          }
+        }}
         style={styles.loginPressStyle}>
         {({pressed}) => (
           <LinearGradient
@@ -138,6 +329,10 @@ export default function LoginScreen({navigation}) {
         <Pressable
           onPress={() => {
             setModalVisible(false);
+            setCMND('');
+            setsearchAcc('');
+            setsearchPWD('');
+            dispatch(setStatusAPI(false));
           }}
           style={{flex: 1}}>
           <View style={styles.modalViewStyles}>
@@ -168,10 +363,10 @@ export default function LoginScreen({navigation}) {
               </Pressable>
 
               <Text style={styles.modalSearchTextStyle}>
-                Tài khoản: bn1.hoang
+                Tài khoản: {searchAcc}
               </Text>
               <Text style={styles.modalSearchTextStyle}>
-                Mật khẩu: 123456789
+                Mật khẩu: {searchPWD}
               </Text>
               <Text style={styles.modalTextRemid}>
                 Nhập CMND/CCCD của bạn để tra cứu
@@ -181,13 +376,33 @@ export default function LoginScreen({navigation}) {
                 mode="outlined"
                 activeUnderlineColor="#A0A0A0"
                 label="Nhập CMND"
-                onSubmitEditing={CMND => {
-                  setCMND(CMND);
+                value={CMND}
+                onChangeText={text => {
+                  setCMND(text);
+                  checkCMND(text);
                 }}
                 outlineColor="#D0D0D0"
                 activeOutlineColor="#A0A0A0"
+                keyboardType="numeric"
               />
-              <Pressable style={styles.modalComfirmSearch}>
+              <Text
+                style={{
+                  fontFamily: 'Roboto',
+                  fontSize: 14,
+                  color: 'red',
+                  marginTop: (height * 1) / 100,
+                }}>
+                {cmmdText}
+              </Text>
+              <Pressable
+                onPress={() => {
+                  if (checkCMND(CMND) == false || CMND.length == 0) {
+                    setmodalFailSearch(true);
+                  } else {
+                    getApiList(CMND);
+                  }
+                }}
+                style={styles.modalComfirmSearch}>
                 {({pressed}) => (
                   <LinearGradient
                     colors={
@@ -223,6 +438,14 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     backgroundColor: 'white',
+  },
+  textWarning: {
+    fontFamily: 'Roboto',
+    fontSize: 14,
+    color: 'red',
+    width: (width * 80) / 100,
+    marginRight: (width * 10) / 100,
+    marginTop: (height * 1) / 100,
   },
   textInputStyle: {
     width: (width * 90) / 100,

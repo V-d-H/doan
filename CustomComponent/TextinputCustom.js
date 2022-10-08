@@ -18,6 +18,7 @@ export default function TextInputCustom(props) {
         onFocus={props.onFocus}
         onBlur={props.onBlur}
         onChangeText={props.onChangeText}
+        keyboardType={props.keyboardType}
       />
       <View
         style={{
