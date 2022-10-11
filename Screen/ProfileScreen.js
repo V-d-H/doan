@@ -137,7 +137,7 @@ export default function ProfileScreen({navigation}) {
   const [checkDateText, setCheckDateText] = useState('');
   const checkDateSpecial = date => {
     var format = /[^\w]/;
-    var Slash = /[^/]/;
+    var Slash = /[^-]/;
     let dateStr = date.split('');
     for (let i = 0; i < date.length; i++) {
       if (format.test(dateStr[i]) || dateStr[i] == '-' || dateStr[i] == '_') {
@@ -171,12 +171,12 @@ export default function ProfileScreen({navigation}) {
     }
   };
   const checkFormDate = date => {
-    var parts = date.split('/');
+    var parts = date.split('-');
     var day = parseInt(parts[0], 10);
     var month = parseInt(parts[1], 10);
     var year = parseInt(parts[2], 10);
-    if (!/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(date)) {
-      setCheckDateText('Vui lòng nhập đúng theo dạng DD/MM/YYYY');
+    if (!/^\d{1,2}\-\d{1,2}\-\d{4}$/.test(date)) {
+      setCheckDateText('Vui lòng nhập đúng theo dạng DD-MM-YYYY');
       return false;
     } else {
       setCheckDateText('');
@@ -447,7 +447,7 @@ export default function ProfileScreen({navigation}) {
           setModalSave(false);
         }}
         textTitle="Thông báo"
-        textRemind1="Bạn đã lưu thông tin thành công!"
+        textRemind="Bạn đã lưu thông tin thành công!"
         comfirmTextButton="Xác nhận"
         saveTextButton="Đóng"
         save={() => {

@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
     color: '#205072',
     fontSize: 18,
     textAlign: 'center',
-    marginTop: (height * 2) / 100,
+    marginTop: (height * 3) / 100,
   },
   textStyle: {
     fontSize: 18,

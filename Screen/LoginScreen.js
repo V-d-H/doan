@@ -12,8 +12,8 @@ import RowBack from '../CustomComponent/RowBack';
 import {TextInput} from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
 import ModalAlert from '../CustomComponent/ModalAlert';
-import {useDispatch, useSelector} from 'react-redux';
-import {setStatusAPI} from '../redux/action';
+import {useDispatch} from 'react-redux';
+import {setStatusAPI, setId} from '../redux/action';
 import axios from 'axios';
 
 const {width, height} = Dimensions.get('window');
@@ -135,7 +135,6 @@ export default function LoginScreen({navigation}) {
   const [PWDtext, setPWDText] = useState('');
   const [cmmdText, setCMNDText] = useState('');
   //redux
-  const {status} = useSelector(state => state.userReducer);
   const dispatch = useDispatch();
   // Axios search
   const [searchAcc, setsearchAcc] = useState('');
@@ -150,16 +149,39 @@ export default function LoginScreen({navigation}) {
         setsearchAcc(response.data.details.idpatient);
         dispatch(setStatusAPI(response.data.status));
         if (response.data.status == true) {
-          dispatch(setStatusAPI(1));
           setmodalsuccesSearch(true);
         } else {
-          dispatch(setStatusAPI(0));
           setmodalFailSearch(true);
         }
       })
       .catch(function (error) {
         // xử trí khi bị lỗi
-        setmodalFailSearch(true);
+        setmodalError(true);
+        console.log(error);
+      })
+      .then(function () {});
+  };
+  // Api Login
+  const getApiLogin = async (acc, pwd) => {
+    const url = 'http://159.223.48.4:8002/duchoang/auth/login-patient';
+    axios
+      .post(url, {
+        idpatient: acc,
+        pwd: pwd,
+      })
+      .then(function (response) {
+        if (response.data.status == true) {
+          setmodalFail(false);
+          dispatch(setStatusAPI(1));
+          dispatch(setId(response.data.id));
+          navigation.navigate('Home');
+        } else {
+          dispatch(setStatusAPI(0));
+          setmodalFail(true);
+        }
+      })
+      .catch(function (error) {
+        setmodalError(true);
         console.log(error);
       })
       .then(function () {});
@@ -168,16 +190,19 @@ export default function LoginScreen({navigation}) {
   const [modalFail, setmodalFail] = useState(false);
   const [modalFailSearch, setmodalFailSearch] = useState(false);
   const [modalsuccesSearch, setmodalsuccesSearch] = useState(false);
-
+  const [modalError, setmodalError] = useState(false);
+  const [modalErrorSpace, setmodalErrorSpace] = useState(false);
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      setAccount('');
-      setPassword('');
+      setAccount('BN1');
+      setPassword('123456789');
       setModalVisible(false);
       setCMND('');
       setmodalFail(false);
       setmodalFailSearch(false);
       setmodalsuccesSearch(false);
+      setmodalError(false);
+      setmodalErrorSpace(false);
     });
     return unsubscribe;
   }, [navigation]);
@@ -189,6 +214,36 @@ export default function LoginScreen({navigation}) {
         }}
         text="Đăng nhập"
         textRemind="Vui lòng điền thông tin đăng nhập"
+      />
+      <ModalAlert
+        open={modalErrorSpace}
+        animationType="fade"
+        close={() => {
+          setmodalErrorSpace(false);
+        }}
+        textTitle="Thông báo"
+        textRemind="Không được để trống"
+        textRemind1="tài khoản mật khẩu"
+        comfirmTextButton="Xác nhận"
+        saveTextButton="Đóng"
+        save={() => {
+          setmodalErrorSpace(false);
+        }}
+      />
+      <ModalAlert
+        open={modalError}
+        animationType="fade"
+        close={() => {
+          setmodalError(false);
+        }}
+        textTitle="Thông báo"
+        textRemind="Lỗi kết nối"
+        textRemind1="Vui lòng kiểm tra lại"
+        comfirmTextButton="Xác nhận"
+        saveTextButton="Đóng"
+        save={() => {
+          setmodalError(false);
+        }}
       />
       <ModalAlert
         open={modalsuccesSearch}
@@ -277,8 +332,13 @@ export default function LoginScreen({navigation}) {
       <Text style={styles.textWarning}>{PWDtext}</Text>
       <Pressable
         onPress={() => {
+          if (account.length == 0 || password.length == 0) {
+            setmodalErrorSpace(true);
+          }
           if (checkAccount(account) == false || checkPWD(password) == false) {
             setmodalFail(true);
+          } else {
+            getApiLogin(account, password);
           }
         }}
         style={styles.loginPressStyle}>
@@ -332,11 +392,15 @@ export default function LoginScreen({navigation}) {
             setCMND('');
             setsearchAcc('');
             setsearchPWD('');
-            dispatch(setStatusAPI(false));
           }}
           style={{flex: 1}}>
           <View style={styles.modalViewStyles}>
-            <View style={styles.ModalStyles}>
+            {/* them 1 Pressable */}
+            <Pressable
+              onPress={() => {
+                setModalVisible(true);
+              }}
+              style={styles.ModalStyles}>
               <Pressable
                 style={styles.modalPressBackStyle}
                 onPress={() => {
@@ -424,7 +488,7 @@ export default function LoginScreen({navigation}) {
                   </LinearGradient>
                 )}
               </Pressable>
-            </View>
+            </Pressable>
           </View>
         </Pressable>
       </Modal>

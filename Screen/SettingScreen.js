@@ -21,7 +21,7 @@ const logoutIcon = require('../ImageScreen/logout.png');
 const inforIcon = require('../ImageScreen/Infor.png');
 const changePWDIcon = require('../ImageScreen/changePWD.png');
 export default function SettingScreen({navigation}) {
-  const {namepatient, uriImage} = useSelector(state => state.userReducer);
+  const {namepatient, uriImage, id} = useSelector(state => state.userReducer);
   const [modalVisible, setModalVisible] = useState(false);
   const [password, setPassword] = useState('');
   const [newpassword, setNewPassword] = useState('');
@@ -86,7 +86,7 @@ export default function SettingScreen({navigation}) {
             alignItems: 'center',
           }}>
           <Text style={styles.personalStyle}>{namepatient}</Text>
-          <Text style={styles.personalStyle}>ID :</Text>
+          <Text style={styles.personalStyle}>ID : {id}</Text>
         </View>
 
         <Pressable

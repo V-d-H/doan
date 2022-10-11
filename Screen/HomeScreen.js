@@ -1,4 +1,5 @@
 import React from 'react';
+import {useEffect, useState} from 'react';
 import {
   View,
   Pressable,
@@ -7,14 +8,68 @@ import {
   StyleSheet,
   Dimensions,
 } from 'react-native';
-import {useSelector} from 'react-redux';
+import ModalAlert from '../CustomComponent/ModalAlert';
+import axios from 'axios';
 const {width, height} = Dimensions.get('window');
+
+import {
+  setNamePatient,
+  setAddress,
+  setCMNDofPatient,
+  setNameCarer,
+  setNumberphone,
+  setAvt,
+  setSex,
+  setBirthday,
+} from '../redux/action';
+import {useDispatch, useSelector} from 'react-redux';
 
 const feedbackicon = require('../ImageScreen/feedback.png');
 const profileicon = require('../ImageScreen/profile.png');
 const prescriptionicon = require('../ImageScreen/prescription.png');
+
 export default function HomeScreen({navigation}) {
-  const {namepatient, uriImage, cmnd} = useSelector(state => state.userReducer);
+  const dispatch = useDispatch();
+  const [modalError, setmodalError] = useState(false);
+  const {namepatient, uriImage, id} = useSelector(state => state.userReducer);
+  const url = 'http://159.223.48.4:8002/duchoang/get-user/' + id;
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      console.log(url);
+      axios
+        .get(url)
+        .then(function (response) {
+          console.log(response.data);
+          //console.log("image : ",response.data.details.image);
+          console.log('CMND :', response.data.details.cmmd);
+          dispatch(setNamePatient(response.data.details.name));
+          dispatch(setNameCarer(response.data.details.namecarer));
+          dispatch(setCMNDofPatient(response.data.details.cmmd));
+          dispatch(setAddress(response.data.details.address));
+          dispatch(setNumberphone(response.data.details.phone));
+          dispatch(setSex(response.data.details.sex));
+          // dispatch(setAvt(response.data.details.image));
+          const b = response.data.details.birthday;
+          var parts = b.split('T');
+          var birthday = parts[0];
+          birthday = birthday.split('-');
+          birthday = birthday[2] + '-' + birthday[1] + '-' + birthday[0];
+          dispatch(setBirthday(birthday));
+        })
+        .catch(function (error) {
+          setmodalError(true);
+          console.log(error);
+        })
+        .then(function () {});
+    });
+    return unsubscribe;
+  }, [dispatch, navigation, url]);
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      setmodalError(false);
+    });
+    return unsubscribe;
+  }, [navigation]);
   return (
     <View style={styles.container}>
       <View style={styles.headerViewStyle}>
@@ -26,6 +81,21 @@ export default function HomeScreen({navigation}) {
             flexDirection: 'row',
             alignItems: 'center',
           }}>
+          <ModalAlert
+            open={modalError}
+            animationType="fade"
+            close={() => {
+              setmodalError(false);
+            }}
+            textTitle="Thông báo"
+            textRemind="Lỗi kết nối"
+            textRemind1="Vui lòng kiểm tra lại"
+            comfirmTextButton="Xác nhận"
+            saveTextButton="Đóng"
+            save={() => {
+              setmodalError(false);
+            }}
+          />
           <Pressable
             style={{
               height: (height * 8.7) / 100,
@@ -51,7 +121,6 @@ export default function HomeScreen({navigation}) {
           </Pressable>
           <Text style={styles.textHeaderStyle}>{namepatient}</Text>
         </View>
-        <Text>{cmnd}</Text>
       </View>
       <Text style={styles.texttitleStyle}>Chức năng</Text>
       <View style={styles.viewFunctionStyle}>

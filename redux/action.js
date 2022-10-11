@@ -7,11 +7,18 @@ export const SET_AVT = 'SET_AVT';
 export const SET_BIRTHDAY = 'SET_BIRTHDAY';
 export const SET_SEX = 'SET_SEX';
 export const SET_STATUS = 'SET_STATUS';
+export const SET_ID = 'SET_ID';
 
 export const setStatusAPI = status => dispatch => {
   dispatch({
     type: SET_STATUS,
     payload: status,
+  });
+};
+export const setId = idpatient => dispatch => {
+  dispatch({
+    type: SET_ID,
+    payload: idpatient,
   });
 };
 export const setNamePatient = name => dispatch => {

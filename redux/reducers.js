@@ -8,18 +8,20 @@ import {
   SET_SEX,
   SET_BIRTHDAY,
   SET_STATUS,
+  SET_ID,
 } from '../redux/action';
 
 const initialState = {
-  namepatient: 'Vũ Đức Hoàng',
-  cmnd: '272802164',
-  namecarer: 'Vũ Đức Huân',
-  address: '25/12/30 Bùi Quang Là',
-  numberphone: '0978215276',
+  namepatient: '',
+  cmnd: '',
+  namecarer: '',
+  address: '',
+  numberphone: '',
   uriImage: null,
-  birthday: '17/11/2001',
+  birthday: '',
   sex: 0,
   status: 0,
+  id: '',
 };
 export default function userReducer(state = initialState, action) {
   switch (action.type) {
@@ -41,6 +43,8 @@ export default function userReducer(state = initialState, action) {
       return {...state, sex: action.payload};
     case SET_STATUS:
       return {...state, status: action.payload};
+    case SET_ID:
+      return {...state, id: action.payload};
     default:
       return state;
   }
