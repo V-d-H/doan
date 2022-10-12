@@ -20,6 +20,7 @@ export default function TextInputCustom(props) {
         onChangeText={props.onChangeText}
         keyboardType={props.keyboardType}
         onSubmitEditing={props.submitText}
+        autoFocus={props.autoFocus}
       />
       <View
         style={{

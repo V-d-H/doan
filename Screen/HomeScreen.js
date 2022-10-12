@@ -32,7 +32,7 @@ export default function HomeScreen({navigation}) {
   const dispatch = useDispatch();
   const [modalError, setmodalError] = useState(false);
   const {namepatient, uriImage, id} = useSelector(state => state.userReducer);
-  const url = 'http://159.223.48.4:8002/duchoang/get-user/BN0';
+  const url = 'http://159.223.48.4:8002/duchoang/get-user/' +id;
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       axios

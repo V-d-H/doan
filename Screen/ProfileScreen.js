@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {
   View,
   Pressable,
@@ -50,10 +50,20 @@ export default function ProfileScreen({navigation}) {
       flex: 1,
     },
   });
+  useEffect(() => {
+    const unsubcribe = navigation.addListener('focus', () => {
+      if (address.length <= 38) {
+        setTextTicker(true);
+      } else {
+        setTextTicker(false);
+      }
+    });
+    return unsubcribe;
+  });
   const TextTickerLength = () => {
     return (
       <Pressable
-        onPress={() => {
+        onPressIn={() => {
           setTextTicker(true);
         }}
         style={styleTextticker.pressViewStyle}>
@@ -576,7 +586,7 @@ export default function ProfileScreen({navigation}) {
                 {marginTop: (height * 2) / 100},
                 styles.detailInformationStyle,
               ]}>
-              ID:{address.length}
+              ID: {id}
             </Text>
             <TextInputCustom
               customInput={nameStyle}
@@ -677,13 +687,14 @@ export default function ProfileScreen({navigation}) {
               placeholder="Nhập CMND/CCCD"
             />
             <Text style={styles.checktextStyles}>{checkCMNDtext}</Text>
-            {address.length <= 38 ? (
+            {textTickerLength ? (
               <TextInputCustom
                 customInput={addressStyle}
                 customInputText={addressStyle}
                 onFocus={() => {
                   setaddressStyle(true);
                 }}
+                autoFocus={textTickerLength}
                 onBlur={() => {
                   setaddressStyle(false);
                   setTextTicker(false);
