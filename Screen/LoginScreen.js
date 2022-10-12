@@ -194,7 +194,7 @@ export default function LoginScreen({navigation}) {
   const [modalErrorSpace, setmodalErrorSpace] = useState(false);
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      setAccount('BN1');
+      setAccount('BN0');
       setPassword('123456789');
       setModalVisible(false);
       setCMND('');
@@ -252,7 +252,7 @@ export default function LoginScreen({navigation}) {
           setmodalsuccesSearch(false);
         }}
         textTitle="Thông báo"
-        textRemind1="Tra cứu thành công"
+        textRemind="Tra cứu thành công"
         comfirmTextButton="Xác nhận"
         saveTextButton="Đóng"
         save={() => {

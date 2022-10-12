@@ -51,10 +51,10 @@ export const setNumberphone = num => dispatch => {
     payload: num,
   });
 };
-export const setAvt = uriIamge => dispatch => {
+export const setAvt = uriImage => dispatch => {
   dispatch({
     type: SET_AVT,
-    payload: uriIamge,
+    payload: uriImage,
   });
 };
 export const setBirthday = date => dispatch => {

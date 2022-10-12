@@ -25,10 +25,44 @@ import BackMainScreen from '../CustomComponent/BackMainScreen';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import ModalAlert from '../CustomComponent/ModalAlert';
+import TextTicker from 'react-native-text-ticker';
+
 const {width, height} = Dimensions.get('window');
 
 export default function ProfileScreen({navigation}) {
-  // Alert
+  // TextTicker
+  const [textTickerLength, setTextTicker] = useState(false);
+  const styleTextticker = StyleSheet.create({
+    TextTickerStyle: {
+      fontFamily: 'Roboto',
+      fontSize: 18,
+      color: '#205072',
+    },
+    pressViewStyle: {
+      width: (width * 90) / 100,
+      height: (height * 8) / 100,
+      borderRadius: 8,
+      paddingLeft: (width * 3) / 100,
+      backgroundColor: 'white',
+      borderWidth: 1,
+      marginTop: (height * 2) / 100,
+      justifyContent: 'center',
+      flex: 1,
+    },
+  });
+  const TextTickerLength = () => {
+    return (
+      <Pressable
+        onPress={() => {
+          setTextTicker(true);
+        }}
+        style={styleTextticker.pressViewStyle}>
+        <TextTicker style={styleTextticker.TextTickerStyle}>
+          {address}
+        </TextTicker>
+      </Pressable>
+    );
+  };
   // Check CMND
   const [checkCMNDtext, setCheckCMNDtext] = useState('');
   const checkCMND = cmnd => {
@@ -299,6 +333,7 @@ export default function ProfileScreen({navigation}) {
     uriImage,
     sex,
     birthday,
+    id,
   } = useSelector(state => state.userReducer);
   const dispatch = useDispatch();
   // dispatch inforamtion
@@ -377,9 +412,10 @@ export default function ProfileScreen({navigation}) {
         console.log('Cancelled!');
       }
       if (res.assets) {
-        // const source = {uri: 'data: iamge/jpeg:base64,' + res.assets[0].uri};
+        // xử lý thành file png
         let stringUri = res.assets[0].uri;
         console.log('res = ', res.assets[0].uri);
+        console.log(stringUri);
         dispatch(setAvt(stringUri));
       }
     });
@@ -391,6 +427,7 @@ export default function ProfileScreen({navigation}) {
       setModalSave(false);
       setmodalSuccess(false);
       setmodalCancel(false);
+      setTextTicker(false);
     });
 
     return unsubcribe;
@@ -481,7 +518,7 @@ export default function ProfileScreen({navigation}) {
           setModalGoback(false);
         }}
         textTitle="Cảnh báo"
-        textRemind1="Bạn chưa lưu thông tin!"
+        textRemind="Bạn chưa lưu thông tin!"
         comfirmTextButton="Xác nhận"
         saveTextButton="Lưu"
         save={() => {
@@ -539,7 +576,7 @@ export default function ProfileScreen({navigation}) {
                 {marginTop: (height * 2) / 100},
                 styles.detailInformationStyle,
               ]}>
-              ID:
+              ID:{address.length}
             </Text>
             <TextInputCustom
               customInput={nameStyle}
@@ -640,24 +677,32 @@ export default function ProfileScreen({navigation}) {
               placeholder="Nhập CMND/CCCD"
             />
             <Text style={styles.checktextStyles}>{checkCMNDtext}</Text>
-            <TextInputCustom
-              customInput={addressStyle}
-              customInputText={addressStyle}
-              onFocus={() => {
-                setaddressStyle(true);
-              }}
-              onBlur={() => {
-                setaddressStyle(false);
-              }}
-              value={addressState}
-              onChangeText={text => {
-                setAddressState(text);
-                const adddressFinal = text.normalize('NFC');
-                checkAddress(adddressFinal);
-              }}
-              text="Địa chỉ"
-              placeholder="Nhập Địa chỉ"
-            />
+            {address.length <= 38 ? (
+              <TextInputCustom
+                customInput={addressStyle}
+                customInputText={addressStyle}
+                onFocus={() => {
+                  setaddressStyle(true);
+                }}
+                onBlur={() => {
+                  setaddressStyle(false);
+                  setTextTicker(false);
+                }}
+                submit={() => {
+                  setTextTicker(false);
+                }}
+                value={addressState}
+                onChangeText={text => {
+                  setAddressState(text);
+                  const adddressFinal = text.normalize('NFC');
+                  checkAddress(adddressFinal);
+                }}
+                text="Địa chỉ"
+                placeholder="Nhập Địa chỉ"
+              />
+            ) : (
+              <TextTickerLength />
+            )}
             <Text style={styles.checktextStyles}>{checkAddressText}</Text>
             <TextInputCustom
               customInput={namecarerStyle}

@@ -14,6 +14,7 @@ import SettingScreen from './Screen/SettingScreen';
 import ProfileScreen from './Screen/ProfileScreen';
 import PrescriptionScreen from './Screen/PrescriptionScreen';
 import FeedbackScreen from './Screen/FeedbackScreen';
+import WebViewTest from './Screen/WebViewTest';
 
 const Stack = createNativeStackNavigator();
 export default () => {
@@ -24,9 +25,10 @@ export default () => {
           screenOptions={{headerShown: false}}
           //initialRouteName="BeginScreen"
         >
-          <Stack.Screen name="LoginScreen" component={LoginScreen} />
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+          <Stack.Screen name="LoginScreen" component={LoginScreen} />
+          <Stack.Screen name="Web" component={WebViewTest} />
           <Stack.Screen name="Prescription" component={PrescriptionScreen} />
           <Stack.Screen name="Setting" component={SettingScreen} />
           <Stack.Screen name="Feedback" component={FeedbackScreen} />

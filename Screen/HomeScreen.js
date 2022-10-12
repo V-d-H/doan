@@ -32,23 +32,21 @@ export default function HomeScreen({navigation}) {
   const dispatch = useDispatch();
   const [modalError, setmodalError] = useState(false);
   const {namepatient, uriImage, id} = useSelector(state => state.userReducer);
-  const url = 'http://159.223.48.4:8002/duchoang/get-user/' + id;
+  const url = 'http://159.223.48.4:8002/duchoang/get-user/BN0';
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      console.log(url);
       axios
         .get(url)
         .then(function (response) {
           console.log(response.data);
-          //console.log("image : ",response.data.details.image);
-          console.log('CMND :', response.data.details.cmmd);
+          console.log('image : ', response.data.details.image);
           dispatch(setNamePatient(response.data.details.name));
           dispatch(setNameCarer(response.data.details.namecarer));
           dispatch(setCMNDofPatient(response.data.details.cmmd));
           dispatch(setAddress(response.data.details.address));
           dispatch(setNumberphone(response.data.details.phone));
           dispatch(setSex(response.data.details.sex));
-          // dispatch(setAvt(response.data.details.image));
+          dispatch(setAvt(response.data.details.image));
           const b = response.data.details.birthday;
           var parts = b.split('T');
           var birthday = parts[0];
@@ -110,7 +108,9 @@ export default function HomeScreen({navigation}) {
               navigation.navigate('Setting');
             }}>
             <Image
-              source={{uri: uriImage}}
+              source={{
+                uri: uriImage,
+              }}
               style={{
                 height: (height * 8) / 100,
                 width: (width * 16) / 100,

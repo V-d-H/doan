@@ -19,6 +19,7 @@ export default function TextInputCustom(props) {
         onBlur={props.onBlur}
         onChangeText={props.onChangeText}
         keyboardType={props.keyboardType}
+        onSubmitEditing={props.submitText}
       />
       <View
         style={{
