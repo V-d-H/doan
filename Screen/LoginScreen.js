@@ -15,7 +15,7 @@ import ModalAlert from '../CustomComponent/ModalAlert';
 import {useDispatch} from 'react-redux';
 import {setStatusAPI, setId} from '../redux/action';
 import axios from 'axios';
-
+import ModalSucessFail from '../CustomComponent/ModalSucessFail';
 const {width, height} = Dimensions.get('window');
 const openEye = require('../ImageScreen/hiddenPW.png');
 const offEye = require('../ImageScreen/hiddenPWoff.png');
@@ -206,6 +206,10 @@ export default function LoginScreen({navigation}) {
     });
     return unsubscribe;
   }, [navigation]);
+  // Icon Alert
+  const iconSuc = require('../ImageScreen/sucessIcon.png');
+  const iconNofication = require('../ImageScreen/noficationIcon.png');
+  const iconFail = require('../ImageScreen/FailIcon.png');
   return (
     <View style={styles.container}>
       <RowBack
@@ -229,35 +233,29 @@ export default function LoginScreen({navigation}) {
         save={() => {
           setmodalErrorSpace(false);
         }}
+        iconNofi={iconNofication}
       />
-      <ModalAlert
+      <ModalSucessFail
         open={modalError}
         animationType="fade"
         close={() => {
           setmodalError(false);
         }}
         textTitle="Thông báo"
-        textRemind="Lỗi kết nối"
-        textRemind1="Vui lòng kiểm tra lại"
+        textRemind1="Lỗi kết nối vui lòng kiểm tra lại"
         comfirmTextButton="Xác nhận"
-        saveTextButton="Đóng"
-        save={() => {
-          setmodalError(false);
-        }}
+        icon={iconFail}
       />
-      <ModalAlert
+      <ModalSucessFail
         open={modalsuccesSearch}
         animationType="fade"
         close={() => {
           setmodalsuccesSearch(false);
         }}
         textTitle="Thông báo"
-        textRemind="Tra cứu thành công"
+        textRemind1="Tra cứu thành công"
         comfirmTextButton="Xác nhận"
-        saveTextButton="Đóng"
-        save={() => {
-          setmodalsuccesSearch(false);
-        }}
+        icon={iconSuc}
       />
       <ModalAlert
         open={modalFail}
@@ -273,21 +271,18 @@ export default function LoginScreen({navigation}) {
         save={() => {
           setmodalFail(false);
         }}
+        iconNofi={iconFail}
       />
-      <ModalAlert
+      <ModalSucessFail
         open={modalFailSearch}
         animationType="fade"
         close={() => {
           setmodalFailSearch(false);
         }}
         textTitle="Thông báo"
-        textRemind="Tra cứu thất bại"
-        textRemind1="Vui lòng kiểm tra lại"
+        textRemind1="Tra cứu thất bại"
         comfirmTextButton="Xác nhận"
-        saveTextButton="Đóng"
-        save={() => {
-          setmodalFailSearch(false);
-        }}
+        icon={iconFail}
       />
       <TextInput
         style={styles.textInputStyle}
@@ -334,11 +329,12 @@ export default function LoginScreen({navigation}) {
         onPress={() => {
           if (account.length == 0 || password.length == 0) {
             setmodalErrorSpace(true);
-          }
-          if (checkAccount(account) == false || checkPWD(password) == false) {
-            setmodalFail(true);
           } else {
-            getApiLogin(account, password);
+            if (checkAccount(account) == false || checkPWD(password) == false) {
+              setmodalFail(true);
+            } else {
+              getApiLogin(account, password);
+            }
           }
         }}
         style={styles.loginPressStyle}>

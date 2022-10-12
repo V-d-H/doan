@@ -32,7 +32,7 @@ export default function HomeScreen({navigation}) {
   const dispatch = useDispatch();
   const [modalError, setmodalError] = useState(false);
   const {namepatient, uriImage, id} = useSelector(state => state.userReducer);
-  const url = 'http://159.223.48.4:8002/duchoang/get-user/' +id;
+  const url = 'http://159.223.48.4:8002/duchoang/get-user/' + id;
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       axios
@@ -68,6 +68,9 @@ export default function HomeScreen({navigation}) {
     });
     return unsubscribe;
   }, [navigation]);
+  // Icon Alert
+  const iconFail = require('../ImageScreen/FailIcon.png');
+
   return (
     <View style={styles.container}>
       <View style={styles.headerViewStyle}>
@@ -93,6 +96,7 @@ export default function HomeScreen({navigation}) {
             save={() => {
               setmodalError(false);
             }}
+            iconNofi={iconFail}
           />
           <Pressable
             style={{

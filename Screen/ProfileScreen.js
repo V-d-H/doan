@@ -26,6 +26,7 @@ import {launchImageLibrary} from 'react-native-image-picker';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import ModalAlert from '../CustomComponent/ModalAlert';
 import TextTicker from 'react-native-text-ticker';
+import ModalSucessFail from '../CustomComponent/ModalSucessFail';
 
 const {width, height} = Dimensions.get('window');
 
@@ -49,6 +50,12 @@ export default function ProfileScreen({navigation}) {
       justifyContent: 'center',
       flex: 1,
     },
+    textTitle: {
+      fontFamily: 'Roboto',
+      fontSize: 16,
+      color: 'black',
+      fontWeight: 'normal',
+    },
   });
   useEffect(() => {
     const unsubcribe = navigation.addListener('focus', () => {
@@ -62,15 +69,25 @@ export default function ProfileScreen({navigation}) {
   });
   const TextTickerLength = () => {
     return (
-      <Pressable
-        onPressIn={() => {
-          setTextTicker(true);
-        }}
-        style={styleTextticker.pressViewStyle}>
-        <TextTicker style={styleTextticker.TextTickerStyle}>
-          {address}
-        </TextTicker>
-      </Pressable>
+      <View style={{flex: 1}}>
+        <Pressable
+          onPress={() => {
+            setTextTicker(true);
+          }}
+          style={styleTextticker.pressViewStyle}>
+          <TextTicker style={styleTextticker.TextTickerStyle}>
+            {address}
+          </TextTicker>
+        </Pressable>
+        <View
+          style={{
+            position: 'absolute',
+            backgroundColor: 'white',
+            marginLeft: (width * 3) / 100,
+          }}>
+          <Text style={styleTextticker.textTitle}>Địa chỉ</Text>
+        </View>
+      </View>
     );
   };
   // Check CMND
@@ -465,6 +482,11 @@ export default function ProfileScreen({navigation}) {
   const [addressStyle, setaddressStyle] = useState(false);
   const [namecarerStyle, setnamecarerStyle] = useState(false);
   const [numberStyle, setnumberStyle] = useState(false);
+
+  // Icon alert
+  const iconSuc = require('../ImageScreen/sucessIcon.png');
+  const iconNofication = require('../ImageScreen/noficationIcon.png');
+  const iconFail = require('../ImageScreen/FailIcon.png');
   return (
     <View style={styles.container}>
       <BackMainScreen
@@ -485,7 +507,7 @@ export default function ProfileScreen({navigation}) {
           }
         }}
       />
-      <ModalAlert
+      <ModalSucessFail
         open={modalSuccess}
         animationType="fade"
         close={() => {
@@ -494,32 +516,23 @@ export default function ProfileScreen({navigation}) {
           setModalSave(false);
         }}
         textTitle="Thông báo"
-        textRemind="Bạn đã lưu thông tin thành công!"
+        textRemind1="Bạn đã lưu thông tin thành công!"
         comfirmTextButton="Xác nhận"
-        saveTextButton="Đóng"
-        save={() => {
-          setModalGoback(false);
-          setModalSave(false);
-          setmodalSuccess(false);
-        }}
+        icon={iconSuc}
       />
-      <ModalAlert
+      <ModalSucessFail
         open={modalCancel}
         animationType="fade"
         close={() => {
-          setmodalCancel(false);
-        }}
-        textTitle="Thông báo"
-        textRemind="Bạn đã hủy chỉnh sửa "
-        textRemind1="thông tin thành công!"
-        comfirmTextButton="Xác nhận"
-        saveTextButton="Đóng"
-        save={() => {
           setModalGoback(false);
           setModalSave(false);
           setmodalSuccess(false);
           setmodalCancel(false);
         }}
+        textTitle="Thông báo"
+        textRemind1="Hủy chỉnh sửa thành công!"
+        comfirmTextButton="Xác nhận"
+        icon={iconSuc}
       />
       <ModalAlert
         open={modalGoback}
@@ -528,7 +541,8 @@ export default function ProfileScreen({navigation}) {
           setModalGoback(false);
         }}
         textTitle="Cảnh báo"
-        textRemind="Bạn chưa lưu thông tin!"
+        textRemind="Bạn chưa lưu thông tin !"
+        textRemind1="Vui lòng lưu thông tin"
         comfirmTextButton="Xác nhận"
         saveTextButton="Lưu"
         save={() => {
@@ -548,6 +562,7 @@ export default function ProfileScreen({navigation}) {
             setmodalSuccess(true);
           }
         }}
+        iconNofi={iconNofication}
       />
       <View
         style={{
@@ -828,10 +843,11 @@ export default function ProfileScreen({navigation}) {
               textRemind="Bạn đã nhập sai gì đó"
               textRemind1="Vui lòng kiểm tra lại"
               comfirmTextButton="Xác nhận"
-              saveTextButton="Hủy"
+              saveTextButton="Đóng"
               save={() => {
                 setModalSave(false);
               }}
+              iconNofi={iconFail}
             />
           </View>
         </KeyboardAwareScrollView>
