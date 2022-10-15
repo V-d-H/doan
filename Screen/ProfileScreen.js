@@ -10,6 +10,7 @@ import {
 import {useDispatch, useSelector} from 'react-redux';
 import CheckBox from '@react-native-community/checkbox';
 import TextInputCustom from '../CustomComponent/TextinputCustom';
+import RNImageConverter from 'react-native-image-converter';
 import {
   setNamePatient,
   setAddress,
@@ -27,6 +28,7 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import ModalAlert from '../CustomComponent/ModalAlert';
 import TextTicker from 'react-native-text-ticker';
 import ModalSucessFail from '../CustomComponent/ModalSucessFail';
+import axios from 'axios';
 
 const {width, height} = Dimensions.get('window');
 
@@ -442,8 +444,11 @@ export default function ProfileScreen({navigation}) {
         // xử lý thành file png
         let stringUri = res.assets[0].uri;
         console.log('res = ', res.assets[0].uri);
-        console.log(stringUri);
-        dispatch(setAvt(stringUri));
+        RNImageConverter.getPNG(stringUri, newFile => {
+          console.log(newFile);
+          //4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsND...
+        });
+        //dispatch(setAvt(stringUri));
       }
     });
   };
@@ -487,6 +492,46 @@ export default function ProfileScreen({navigation}) {
   const iconSuc = require('../ImageScreen/sucessIcon.png');
   const iconNofication = require('../ImageScreen/noficationIcon.png');
   const iconFail = require('../ImageScreen/FailIcon.png');
+  // Edit profile
+  const postEditProfile = async (
+    id,
+    name,
+    cmnd,
+    sex,
+    address,
+    namecarer,
+    phone,
+    image,
+  ) =>
+    new Promise((resolve, reject) => {
+      var data = new FormData();
+      data.append(id);
+      data.append(name);
+      data.append(sex);
+      data.append(cmnd);
+      //data.append(birthday);
+      data.append(phone);
+      data.append(namecarer);
+      data.append(address);
+      data.append({
+        uri: image,
+        name: 'userImage.png',
+        type: 'image/png',
+      });
+      const url =
+        'http://159.223.48.4:8002/duchoang/edit-user?idpatient=BN0&name=V%C5%A9%20%C4%90%E1%BB%A9c%20Ho%C3%A0ng&cmmd=272802164&address=25%2F12%2F30%20B%C3%B9i%20Quang%20L%C3%A0%20P12%20G%C3%B2%20V%E1%BA%A5p%20TPHCM&namecarer=V%C5%A9%20%C4%90%E1%BB%A9c%20Hu%C3%A2n&phone=0335527004&sex=0&birthday=2001-11-17T22%3A48%3A50.907303';
+      return axios
+        .post(url, data)
+        .then(function (response) {
+          resolve(response);
+          console.log('Hoang');
+        })
+        .catch(function (error) {
+          console.log('Hoang1');
+          reject(error);
+        })
+        .then(function () {});
+    });
   return (
     <View style={styles.container}>
       <BackMainScreen
@@ -785,6 +830,16 @@ export default function ProfileScreen({navigation}) {
                     setModalGoback(false);
                   } else {
                     saveChange();
+                    postEditProfile(
+                      id,
+                      namepatient,
+                      cmnd,
+                      sex,
+                      address,
+                      namecarer,
+                      numberphone,
+                      uriImage,
+                    );
                     setmodalSuccess(true);
                   }
                 }}>

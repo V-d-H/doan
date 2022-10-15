@@ -13,7 +13,7 @@ import {TextInput} from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
 import ModalAlert from '../CustomComponent/ModalAlert';
 import {useDispatch} from 'react-redux';
-import {setStatusAPI, setId} from '../redux/action';
+import {setId, setPWDPatient} from '../redux/action';
 import axios from 'axios';
 import ModalSucessFail from '../CustomComponent/ModalSucessFail';
 const {width, height} = Dimensions.get('window');
@@ -147,7 +147,6 @@ export default function LoginScreen({navigation}) {
         // xử trí khi thành công
         setsearchPWD(response.data.details.pwd);
         setsearchAcc(response.data.details.idpatient);
-        dispatch(setStatusAPI(response.data.status));
         if (response.data.status == true) {
           setmodalsuccesSearch(true);
         } else {
@@ -172,11 +171,10 @@ export default function LoginScreen({navigation}) {
       .then(function (response) {
         if (response.data.status == true) {
           setmodalFail(false);
-          dispatch(setStatusAPI(1));
           dispatch(setId(response.data.id));
+          dispatch(setPWDPatient(password));
           navigation.navigate('Home');
         } else {
-          dispatch(setStatusAPI(0));
           setmodalFail(true);
         }
       })
@@ -195,7 +193,7 @@ export default function LoginScreen({navigation}) {
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       setAccount('BN0');
-      setPassword('123456789');
+      setPassword('17112001');
       setModalVisible(false);
       setCMND('');
       setmodalFail(false);

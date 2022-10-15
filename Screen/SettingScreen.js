@@ -8,10 +8,12 @@ import {
   Pressable,
   Modal,
 } from 'react-native';
-import {useSelector} from 'react-redux';
 import BackMainScreen from '../CustomComponent/BackMainScreen';
 import LinearGradient from 'react-native-linear-gradient';
 import {TextInput} from 'react-native-paper';
+import {useDispatch, useSelector} from 'react-redux';
+import {setPWDPatient} from '../redux/action';
+import axios from 'axios';
 
 const openEye = require('../ImageScreen/hiddenPW.png');
 const offEye = require('../ImageScreen/hiddenPWoff.png');
@@ -20,18 +22,98 @@ const rowBackImage = require('../ImageScreen/rowBack.png');
 const logoutIcon = require('../ImageScreen/logout.png');
 const inforIcon = require('../ImageScreen/Infor.png');
 const changePWDIcon = require('../ImageScreen/changePWD.png');
+
 export default function SettingScreen({navigation}) {
-  const {namepatient, uriImage, id} = useSelector(state => state.userReducer);
   const [modalVisible, setModalVisible] = useState(false);
   const [password, setPassword] = useState('');
   const [newpassword, setNewPassword] = useState('');
+  const [comfirmPWD, setComfirmPWD] = useState('');
   const [showPassword, setShowPassword] = useState(true);
   const [showPassword1, setShowPassword1] = useState(true);
   const [showPassword2, setShowPassword2] = useState(true);
-  const [comfirmPWD, setComfirmPWD] = useState('');
+  // redux
+  const {namepatient, uriImage, pwd, id} = useSelector(
+    state => state.userReducer,
+  );
+  const dispatch = useDispatch();
+  // Check PWD
+
+  const [PWDtext, setPWDText] = useState('');
+  const [PWDnewtext, setPWDnewText] = useState('');
+  const [PWDcomfirmtext, setPWDcomfirmText] = useState('');
+  const checkPWD = text => {
+    var format = /[^a-zA-Z0-9\s]/;
+    let textStr = text.split('');
+    for (let i = 0; i < text.length; i++) {
+      if (format.test(textStr[i])) {
+        return false;
+      }
+      if (/[\s]/.test(textStr[i])) {
+        return 1;
+      }
+    }
+  };
+  const onChangeTextPWD = text => {
+    checkPWD(text);
+    if (checkPWD(text) == false) {
+      setPWDText('Không được chứa các ký hiệu đặc biệt');
+      return false;
+    } else if (checkPWD(text) == 1) {
+      setPWDText('Không chứa khoảng trắng');
+      return false;
+    } else {
+      setPWDText('');
+    }
+  };
+  const onChangeTextPWDnew = text => {
+    checkPWD(text);
+    if (checkPWD(text) == false) {
+      setPWDnewText('Không được chứa các ký hiệu đặc biệt');
+      return false;
+    } else if (checkPWD(text) == 1) {
+      setPWDnewText('Không chứa khoảng trắng');
+      return false;
+    } else if (text.length < 8 && text.length > 0) {
+      setPWDnewText('Độ dài của mật khẩu phải dài hơn 8');
+      return false;
+    } else if (text.length == 0) {
+      setPWDnewText('');
+    } else {
+      setPWDnewText('');
+    }
+  };
+  const onChangeTextPWDcomfirm = text => {
+    checkPWD(text);
+    if (checkPWD(text) == false) {
+      setPWDcomfirmText('Không được chứa các ký hiệu đặc biệt');
+      return false;
+    } else if (checkPWD(text) == 1) {
+      setPWDcomfirmText('Không chứa khoảng trắng');
+      return false;
+    } else if (text.length < 8 && text.length > 0) {
+      setPWDcomfirmText('Độ dài của mật khẩu phải dài hơn 8');
+      return false;
+    } else if (text.length == 0) {
+      setPWDcomfirmText('');
+    } else {
+      setPWDcomfirmText('');
+    }
+  };
+  // use Text err
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      setPWDText('');
+      setPWDnewText('');
+      setPWDcomfirmText('');
+    });
+    return unsubscribe;
+  }, [navigation]);
+  // useEffect icon hide show pwd
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       setPassword('');
+      setNewPassword('');
+      setComfirmPWD('');
       setModalVisible(false);
       setShowPassword1(true);
       setShowPassword(true);
@@ -39,6 +121,30 @@ export default function SettingScreen({navigation}) {
     });
     return unsubscribe;
   }, [navigation]);
+
+  // API chagne pwd
+  // Api Login
+  const postChangePWD = async (acc, pwd) => {
+    const url = 'http://159.223.48.4:8002/duchoang/change-password-patient';
+    axios
+      .post(url, {
+        idpatient: acc,
+        pwd: pwd,
+      })
+      .then(function (response) {
+        console.log(response.data);
+        if (response.data.status == true) {
+          //setmodalFail(false);
+        } else {
+          // setmodalFail(true);
+        }
+      })
+      .catch(function (error) {
+        //setmodalError(true);
+        console.log(error);
+      })
+      .then(function () {});
+  };
   return (
     <View style={styles.container}>
       <BackMainScreen
@@ -151,6 +257,7 @@ export default function SettingScreen({navigation}) {
               marginLeft: (width * 3) / 100,
             }}
           />
+          {/* set tat ca dispatch ve null */}
           <View style={styles.viewTextinPress}>
             <Text
               style={[
@@ -176,7 +283,7 @@ export default function SettingScreen({navigation}) {
           }}
           style={{flex: 1}}>
           <View style={styles.modalViewStyles}>
-            <View style={styles.ModalStyles}>
+            <Pressable style={styles.ModalStyles}>
               <Pressable
                 style={styles.modalPressBackStyle}
                 onPress={() => {
@@ -202,74 +309,120 @@ export default function SettingScreen({navigation}) {
                 </Text>
               </Pressable>
               <Text style={styles.modalTextRemid}>Thay đổi mật khẩu</Text>
-
-              <TextInput
-                style={styles.textInputStyleModal}
-                mode="outlined"
-                activeUnderlineColor="#A0A0A0"
-                label="Mật khẩu cũ"
-                placeholder="Nhập mật khẩu cũ"
-                onSubmitEditing={text => {
-                  setPassword(text);
+              <View>
+                <TextInput
+                  style={styles.textInputStyleModal}
+                  mode="outlined"
+                  activeUnderlineColor="#A0A0A0"
+                  label="Mật khẩu cũ"
+                  placeholder="Nhập mật khẩu cũ"
+                  onChangeText={text => {
+                    setPassword(text);
+                    onChangeTextPWD(text);
+                  }}
+                  outlineColor="#D0D0D0"
+                  activeOutlineColor="#A0A0A0"
+                  secureTextEntry={showPassword}
+                  right={
+                    <TextInput.Icon
+                      name={showPassword ? offEye : openEye}
+                      onPress={() => {
+                        setShowPassword(!showPassword);
+                      }}
+                      style={{marginTop: (height * 2) / 100}}
+                    />
+                  }
+                />
+                <Text style={styles.textErrInput}>{PWDtext}</Text>
+                <TextInput
+                  style={styles.textInputStyleModal}
+                  mode="outlined"
+                  activeUnderlineColor="#A0A0A0"
+                  label="Mật khẩu mới"
+                  placeholder="Nhập mật khẩu mới"
+                  onChangeText={text => {
+                    setNewPassword(text);
+                    onChangeTextPWDnew(text);
+                  }}
+                  outlineColor="#D0D0D0"
+                  activeOutlineColor="#A0A0A0"
+                  secureTextEntry={showPassword1}
+                  right={
+                    <TextInput.Icon
+                      name={showPassword1 ? offEye : openEye}
+                      onPress={() => {
+                        setShowPassword1(!showPassword1);
+                      }}
+                      style={{marginTop: (height * 2) / 100}}
+                    />
+                  }
+                />
+                <Text style={styles.textErrInput}>{PWDnewtext}</Text>
+                <TextInput
+                  style={styles.textInputStyleModal}
+                  mode="outlined"
+                  activeUnderlineColor="#A0A0A0"
+                  label="Xác nhận mật khẩu"
+                  placeholder="Xác nhận mật khẩu mới"
+                  onChangeText={text => {
+                    setComfirmPWD(text);
+                    onChangeTextPWDcomfirm(text);
+                  }}
+                  outlineColor="#D0D0D0"
+                  activeOutlineColor="#A0A0A0"
+                  secureTextEntry={showPassword2}
+                  right={
+                    <TextInput.Icon
+                      name={showPassword2 ? offEye : openEye}
+                      onPress={() => {
+                        setShowPassword2(!showPassword2);
+                      }}
+                      style={{marginTop: (height * 2) / 100}}
+                    />
+                  }
+                />
+                <Text style={styles.textErrInput}>{PWDcomfirmtext}</Text>
+              </View>
+              <Pressable
+                onPress={() => {
+                  if (
+                    password.length == 0 ||
+                    newpassword.length == 0 ||
+                    comfirmPWD.length == 0
+                  ) {
+                    console.log('Khong de trong');
+                    return false;
+                  } else {
+                    if (onChangeTextPWD(password) == false) {
+                      console.log('Sai syntax');
+                    } else {
+                      if (password != pwd) {
+                        console.log('Mk sai');
+                        console.log(pwd);
+                      } else {
+                        if (
+                          onChangeTextPWDnew(newpassword) == false ||
+                          onChangeTextPWDcomfirm(comfirmPWD) == false
+                        ) {
+                          console.log('Sai syntax cua mat khau moi');
+                        } else {
+                          if (newpassword == comfirmPWD) {
+                            if (pwd == newpassword) {
+                              console.log('nhap mat khau cu');
+                            } else {
+                              postChangePWD(id, newpassword);
+                              dispatch(setPWDPatient(newpassword));
+                            }
+                          } else {
+                            console.log('mat khau khong trung nhau');
+                          }
+                          // lam lai cho nay
+                        }
+                      }
+                    }
+                  }
                 }}
-                outlineColor="#D0D0D0"
-                activeOutlineColor="#A0A0A0"
-                secureTextEntry={showPassword}
-                right={
-                  <TextInput.Icon
-                    name={showPassword ? offEye : openEye}
-                    onPress={() => {
-                      setShowPassword(!showPassword);
-                    }}
-                    style={{marginTop: (height * 2) / 100}}
-                  />
-                }
-              />
-              <TextInput
-                style={styles.textInputStyleModal}
-                mode="outlined"
-                activeUnderlineColor="#A0A0A0"
-                label="Mật khẩu mới"
-                placeholder="Nhập mật khẩu mới"
-                onSubmitEditing={text => {
-                  setNewPassword(text);
-                }}
-                outlineColor="#D0D0D0"
-                activeOutlineColor="#A0A0A0"
-                secureTextEntry={showPassword1}
-                right={
-                  <TextInput.Icon
-                    name={showPassword1 ? offEye : openEye}
-                    onPress={() => {
-                      setShowPassword1(!showPassword1);
-                    }}
-                    style={{marginTop: (height * 2) / 100}}
-                  />
-                }
-              />
-              <TextInput
-                style={styles.textInputStyleModal}
-                mode="outlined"
-                activeUnderlineColor="#A0A0A0"
-                label="Xác nhận mật khẩu"
-                placeholder="Xác nhận mật khẩu mới"
-                onSubmitEditing={text => {
-                  setComfirmPWD(text);
-                }}
-                outlineColor="#D0D0D0"
-                activeOutlineColor="#A0A0A0"
-                secureTextEntry={showPassword2}
-                right={
-                  <TextInput.Icon
-                    name={showPassword2 ? offEye : openEye}
-                    onPress={() => {
-                      setShowPassword2(!showPassword2);
-                    }}
-                    style={{marginTop: (height * 2) / 100}}
-                  />
-                }
-              />
-              <Pressable style={styles.modalComfirmSearch}>
+                style={styles.modalComfirmSearch}>
                 {({pressed}) => (
                   <LinearGradient
                     colors={
@@ -291,7 +444,7 @@ export default function SettingScreen({navigation}) {
                   </LinearGradient>
                 )}
               </Pressable>
-            </View>
+            </Pressable>
           </View>
         </Pressable>
       </Modal>
@@ -304,6 +457,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
     alignItems: 'center',
+  },
+  textErrInput: {
+    fontFamily: 'Roboto',
+    fontSize: 14,
+    color: 'red',
+    marginTop: (height * 1) / 100,
   },
   modalViewStyles: {
     flex: 1,
@@ -335,7 +494,7 @@ const styles = StyleSheet.create({
     width: (width * 60) / 100,
     backgroundColor: 'blue',
     borderRadius: 13,
-    marginTop: (height * 5) / 100,
+    marginTop: (height * 3) / 100,
   },
   modalTextRemid: {
     fontFamily: 'Roboto',
@@ -345,7 +504,7 @@ const styles = StyleSheet.create({
   textInputStyleModal: {
     width: (width * 65) / 100,
     height: (height * 8) / 100,
-    marginTop: (height * 3) / 100,
+    marginTop: (height * 1) / 100,
     backgroundColor: 'white',
   },
   textTitle: {

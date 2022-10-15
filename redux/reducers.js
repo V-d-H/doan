@@ -9,6 +9,7 @@ import {
   SET_BIRTHDAY,
   SET_STATUS,
   SET_ID,
+  SET_PWD,
 } from '../redux/action';
 
 const initialState = {
@@ -20,8 +21,8 @@ const initialState = {
   uriImage: null,
   birthday: '',
   sex: 0,
-  status: 0,
   id: '',
+  pwd: '',
 };
 export default function userReducer(state = initialState, action) {
   switch (action.type) {
@@ -41,10 +42,10 @@ export default function userReducer(state = initialState, action) {
       return {...state, birthday: action.payload};
     case SET_SEX:
       return {...state, sex: action.payload};
-    case SET_STATUS:
-      return {...state, status: action.payload};
     case SET_ID:
       return {...state, id: action.payload};
+    case SET_PWD:
+      return {...state, pwd: action.payload};
     default:
       return state;
   }
