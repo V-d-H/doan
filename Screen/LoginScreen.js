@@ -16,6 +16,7 @@ import {useDispatch} from 'react-redux';
 import {setId, setPWDPatient} from '../redux/action';
 import axios from 'axios';
 import ModalSucessFail from '../CustomComponent/ModalSucessFail';
+import {cloneNode} from '@babel/types';
 const {width, height} = Dimensions.get('window');
 const openEye = require('../ImageScreen/hiddenPW.png');
 const offEye = require('../ImageScreen/hiddenPWoff.png');
@@ -29,6 +30,7 @@ export default function LoginScreen({navigation}) {
   const [CMND, setCMND] = useState('');
 
   // check email
+  const [accBool, setAccBool] = useState(true);
   const checkAccount = acc => {
     var format = /[^a-z0-9A-Z]/;
     let accStr = acc.split('');
@@ -51,11 +53,11 @@ export default function LoginScreen({navigation}) {
     } else if (checkAccount(text) == 1) {
       setAccountText('Không chứa khoảng trắng');
       return false;
-    } else {
-      setAccountText('');
     }
   };
+
   // Check PWD
+  const [pwdBool, setPWDBool] = useState(true);
   const checkPWD = text => {
     var format = /[^a-zA-Z0-9\s]/;
     let textStr = text.split('');
@@ -77,26 +79,29 @@ export default function LoginScreen({navigation}) {
       setPWDText('Không chứa khoảng trắng');
       return false;
     } else {
-      setPWDText('');
+      if (text.length > 0 && text.length < 8) {
+        setPWDText('Độ dài mật khẩu phải lớn hơn 8');
+        return false;
+      }
     }
   };
   //check CMND
+  const [cmndBool, setcmndBool] = useState(true);
   const checkCMND = cmnd => {
     checkCMNDStr(cmnd);
     checkSpecialStr(cmnd);
-    if (cmnd.length == 0) {
-      setCMNDText('');
+
+    if (checkCMNDStr(cmnd) == false || checkSpecialStr(cmnd) == false) {
+      setCMNDText('Không chứa các ký tự hoặc ký tự đặc biệt');
+      return false;
+    } else if (checkSpecialStr(cmnd) == 1) {
+      setCMNDText('Không chứa khoảng trắng');
+      return false;
     } else {
-      if (checkCMNDStr(cmnd) == false || checkSpecialStr(cmnd) == false) {
-        setCMNDText('Không chứa các ký tự hoặc ký tự đặc biệt');
-        return false;
+      if (cmnd.length == 9 || cmnd.length == 12) {
       } else {
-        if (cmnd.length == 9 || cmnd.length == 12) {
-          setCMNDText('');
-        } else {
-          setCMNDText('Chiều dài của CMND là 9 - CCCD là 12!');
-          return false;
-        }
+        setCMNDText('Chiều dài của CMND là 9 - CCCD là 12!');
+        return false;
       }
     }
   };
@@ -112,24 +117,14 @@ export default function LoginScreen({navigation}) {
     var format = /[^\w\s\\\-]/;
     let cmndStr = cmnd.split('');
     for (let i = 0; i < cmnd.length; i++) {
-      if (
-        format.test(cmndStr[i]) ||
-        cmndStr[i] == '-' ||
-        cmndStr[i] == '_' ||
-        cmndStr[i] == ' '
-      ) {
+      if (format.test(cmndStr[i]) || cmndStr[i] == '-' || cmndStr[i] == '_') {
         return false;
+      }
+      if (/[\s]/.test(cmndStr[i])) {
+        return 1;
       }
     }
   };
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      setAccountText('');
-      setPWDText('');
-      setCMNDText('');
-    });
-    return unsubscribe;
-  }, [navigation]);
   // State of input
   const [accoutnText, setAccountText] = useState('');
   const [PWDtext, setPWDText] = useState('');
@@ -194,13 +189,19 @@ export default function LoginScreen({navigation}) {
     const unsubscribe = navigation.addListener('focus', () => {
       setAccount('BN0');
       setPassword('17112001');
+      // search
       setModalVisible(false);
       setCMND('');
+      // alert
       setmodalFail(false);
       setmodalFailSearch(false);
       setmodalsuccesSearch(false);
       setmodalError(false);
       setmodalErrorSpace(false);
+      // set text remind
+      setAccountText('');
+      setPWDText('');
+      setCMNDText('');
     });
     return unsubscribe;
   }, [navigation]);
@@ -283,7 +284,7 @@ export default function LoginScreen({navigation}) {
         icon={iconFail}
       />
       <TextInput
-        style={styles.textInputStyle}
+        style={[{marginTop: (height * 3) / 100}, styles.textInputStyle]}
         mode="outlined"
         activeUnderlineColor="#A0A0A0"
         label="Nhập tài khoản"
@@ -293,11 +294,19 @@ export default function LoginScreen({navigation}) {
         onChangeText={text => {
           setAccount(text);
           onChangeText(text);
+          if (onChangeText(text) == false) {
+            setAccBool(false);
+          } else {
+            setAccBool(true);
+          }
         }}
         outlineColor="#D0D0D0"
         activeOutlineColor="#A0A0A0"
       />
-      <Text style={styles.textWarning}>{accoutnText}</Text>
+      <View style={styles.boolHideShowStyleText}>
+        {accBool ? null : <Text style={styles.textWarning}>{accoutnText}</Text>}
+      </View>
+
       <TextInput
         style={styles.textInputStyle}
         mode="outlined"
@@ -307,6 +316,12 @@ export default function LoginScreen({navigation}) {
         onChangeText={text => {
           setPassword(text);
           onChangeTextPWD(text);
+          console.log(onChangeTextPWD(text));
+          if (onChangeTextPWD(text) == false) {
+            setPWDBool(false);
+          } else {
+            setPWDBool(true);
+          }
         }}
         value={password}
         outlineColor="#D0D0D0"
@@ -322,7 +337,10 @@ export default function LoginScreen({navigation}) {
           />
         }
       />
-      <Text style={styles.textWarning}>{PWDtext}</Text>
+      <View style={styles.boolHideShowStyleText}>
+        {pwdBool ? null : <Text style={styles.textWarning}>{PWDtext}</Text>}
+      </View>
+
       <Pressable
         onPress={() => {
           if (account.length == 0 || password.length == 0) {
@@ -384,8 +402,6 @@ export default function LoginScreen({navigation}) {
           onPress={() => {
             setModalVisible(false);
             setCMND('');
-            setsearchAcc('');
-            setsearchPWD('');
           }}
           style={{flex: 1}}>
           <View style={styles.modalViewStyles}>
@@ -438,20 +454,56 @@ export default function LoginScreen({navigation}) {
                 onChangeText={text => {
                   setCMND(text);
                   checkCMND(text);
+                  if (text.length == 0) {
+                    setcmndBool(true);
+                  } else {
+                    if (checkCMND(text) == false) {
+                      setcmndBool(false);
+                    } else {
+                      setcmndBool(true);
+                    }
+                  }
                 }}
                 outlineColor="#D0D0D0"
                 activeOutlineColor="#A0A0A0"
                 keyboardType="numeric"
               />
-              <Text
+              <View
                 style={{
-                  fontFamily: 'Roboto',
-                  fontSize: 14,
-                  color: 'red',
-                  marginTop: (height * 1) / 100,
+                  height: (height * 4) / 100,
+                  width: (width * 70) / 100,
                 }}>
-                {cmmdText}
-              </Text>
+                {cmndBool ? null : (
+                  <Text
+                    style={{
+                      fontFamily: 'Roboto',
+                      fontSize: 14,
+                      color: 'red',
+                      marginTop: (height * 1) / 100,
+                    }}>
+                    {cmmdText}
+                  </Text>
+                )}
+              </View>
+              <View
+                style={{
+                  height: (height * 6) / 100,
+                  width: (width * 60) / 100,
+                  alignItems: 'center',
+                }}>
+                {CMND.length == 0 ? (
+                  <Text
+                    style={{
+                      fontFamily: 'Roboto',
+                      fontSize: 16,
+                      color: 'red',
+                      marginTop: (height * 2) / 100,
+                    }}>
+                    Không được để trống mục này
+                  </Text>
+                ) : null}
+              </View>
+
               <Pressable
                 onPress={() => {
                   if (checkCMND(CMND) == false || CMND.length == 0) {
@@ -503,12 +555,15 @@ const styles = StyleSheet.create({
     color: 'red',
     width: (width * 80) / 100,
     marginRight: (width * 10) / 100,
-    marginTop: (height * 1) / 100,
+  },
+  boolHideShowStyleText: {
+    marginBottom: (height * 1) / 100,
+    height: (height * 4) / 100,
+    width: (width * 90) / 100,
   },
   textInputStyle: {
     width: (width * 90) / 100,
     height: (height * 8) / 100,
-    marginTop: (height * 3) / 100,
     backgroundColor: 'white',
   },
   textSupportoutPress: {
@@ -578,7 +633,7 @@ const styles = StyleSheet.create({
     width: (width * 60) / 100,
     backgroundColor: 'blue',
     borderRadius: 13,
-    marginTop: (height * 5) / 100,
+    marginTop: (height * 1) / 100,
   },
   modalTextRemid: {
     fontFamily: 'Roboto',
@@ -594,7 +649,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto',
   },
   textInputStyleModal: {
-    width: (width * 65) / 100,
+    width: (width * 70) / 100,
     height: (height * 8) / 100,
     marginTop: (height * 3) / 100,
     backgroundColor: 'white',
